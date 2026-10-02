@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cumin admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,560&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f3ecdf;
+      --ink: #24170f;
+      --rule: #d7c7b0;
+      --saffron: #c65a1e;
+      --green: #1d4a38;
+      --warn: #8a3b12;
+      --panel: #fffaf3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "DM Mono", ui-monospace, monospace;
+      font-size: 14px;
+    }
+    button, select { font: inherit; cursor: pointer; }
+    .gate {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 15% 0, #f8e2c4, transparent 40%),
+        var(--paper);
+    }
+    .gate form { width: min(460px, calc(100% - 32px)); }
+    h1 {
+      margin: 0 0 8px;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 64px;
+      font-weight: 560;
+      letter-spacing: -0.045em;
+      line-height: 0.85;
+    }
+    h1 span, .brand span { color: var(--saffron); }
+    .gate p { line-height: 1.45; }
+    .row { display: flex; gap: 8px; }
+    input, select {
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      padding: 12px 14px;
+    }
+    input { flex: 1; }
+    button.solid {
+      border: 0;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 12px 16px;
+    }
+    button.solid:hover, button.quiet:hover { background: var(--saffron); color: var(--paper); }
+    button.quiet, button.danger {
+      border: 1px solid var(--ink);
+      background: transparent;
+      padding: 8px 10px;
+    }
+    button.danger { color: var(--warn); border-color: var(--warn); }
+    .error { color: var(--warn); min-height: 1.4em; }
+    .app { display: none; min-height: 100vh; grid-template-columns: 300px 1fr; }
+    .app.on { display: grid; }
+    aside {
+      border-right: 1px solid var(--ink);
+      padding: 22px 16px;
+      background: #f7f1e6;
+    }
+    .brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 18px;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 32px;
+    }
+    .brand button {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      font-family: "DM Mono", ui-monospace, monospace;
+      font-size: 13px;
+      text-decoration: underline;
+    }
+    .tenant {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      border-bottom: 1px solid var(--rule);
+      background: transparent;
+      padding: 12px 4px;
+    }
+    .tenant.selected { background: #fffaf3; box-shadow: inset 3px 0 var(--saffron); }
+    .tenant strong { display: block; font-family: Fraunces, Georgia, serif; font-size: 22px; font-weight: 560; }
+    .muted { color: #6d5c4e; }
+    .off { color: var(--warn); }
+    main { padding: 28px 32px 64px; }
+    .head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; }
+    .head h2 { margin: 0; font-family: Fraunces, Georgia, serif; font-size: 48px; font-weight: 560; letter-spacing: -0.04em; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0; }
+    .stats div { border-top: 1px solid var(--ink); padding-top: 8px; }
+    .stats strong { display: block; margin-top: 4px; font-family: Fraunces, Georgia, serif; font-size: 26px; font-weight: 560; line-height: 1.05; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    section { margin-top: 28px; }
+    h3 { margin: 0 0 10px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    th { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+    .banner {
+      margin: 16px 0;
+      padding: 12px 14px;
+      background: #fffaf3;
+      border: 1px solid var(--ink);
+    }
+    .replay {
+      margin-top: 8px;
+      padding: 12px;
+      background: var(--panel);
+      border-left: 3px solid var(--saffron);
+      white-space: pre-wrap;
+    }
+    .warn { color: var(--warn); }
+    @media (max-width: 860px) {
+      .app.on { grid-template-columns: 1fr; }
+      aside { border-right: 0; border-bottom: 1px solid var(--ink); }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .head h2 { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="gate" id="gate">
+    <form id="login">
+      <h1>Cu<span>min</span></h1>
+      <p>One board for every tenant: usage, ledger, keys, logs, and stored replies.</p>
+      <div class="row">
+        <input id="token" type="password" placeholder="Admin token" required>
+        <button class="solid" type="submit">Enter</button>
+      </div>
+      <p id="login-error" class="error"></p>
+    </form>
+  </div>
+  <div class="app" id="app">
+    <aside>
+      <div class="brand"><span>Cu<span>min</span></span><button id="signout" type="button">Sign out</button></div>
+      <div id="list"></div>
+    </aside>
+    <main id="detail"></main>
+  </div>
+  <script>
+    const TOKEN_KEY = "cumin-admin-token";
+    let token = sessionStorage.getItem(TOKEN_KEY) || "";
+    let plans = [];
+    let selected = null;
+    let issuedKey = null;
+
+    const gate = document.querySelector("#gate");
+    const app = document.querySelector("#app");
+    const loginError = document.querySelector("#login-error");
+
+    document.querySelector("#login").addEventListener("submit", (event) => {
+      event.preventDefault();
+      token = document.querySelector("#token").value.trim();
+      openBoard();
+    });
+    document.querySelector("#signout").addEventListener("click", () => {
+      sessionStorage.removeItem(TOKEN_KEY);
+      token = "";
+      selected = null;
+      app.classList.remove("on");
+      gate.style.display = "grid";
+    });
+
+    if (token) openBoard();
+
+    async function openBoard() {
+      loginError.textContent = "";
+      const response = await api("/v1/admin/tenants");
+      if (!response) return;
+      sessionStorage.setItem(TOKEN_KEY, token);
+      plans = response.plans;
+      gate.style.display = "none";
+      app.classList.add("on");
+      if (!selected && response.tenants.length) selected = response.tenants[0].id;
+      renderList(response.tenants);
+      if (selected) loadDetail(selected);
+    }
+
+    function renderList(tenants) {
+      const list = document.querySelector("#list");
+      list.replaceChildren();
+      for (const tenant of tenants) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "tenant" + (tenant.id === selected ? " selected" : "");
+        const name = document.createElement("strong");
+        name.textContent = tenant.name;
+        const meta = document.createElement("div");
+        meta.className = tenant.is_active ? "muted" : "off";
+        meta.textContent = (tenant.is_active ? "" : "inactive · ") + money(tenant.usage.spent_usd);
+        button.append(name, meta);
+        button.addEventListener("click", () => {
+          selected = tenant.id;
+          issuedKey = null;
+          loadDetail(tenant.id);
+          openBoard();
+        });
+        list.append(button);
+      }
+    }
+
+    async function loadDetail(id) {
+      const data = await api("/v1/admin/tenants/" + encodeURIComponent(id));
+      if (!data) return;
+      renderDetail(data);
+    }
+
+    function renderDetail(data) {
+      const root = document.querySelector("#detail");
+      root.replaceChildren();
+      const head = document.createElement("div");
+      head.className = "head";
+      const title = document.createElement("div");
+      const h2 = document.createElement("h2");
+      h2.textContent = data.name;
+      const id = document.createElement("div");
+      id.className = data.is_active ? "muted" : "off";
+      id.textContent = data.id + (data.is_active ? "" : " · inactive");
+      title.append(h2, id);
+
+      const controls = document.createElement("div");
+      controls.className = "controls";
+      const plan = document.createElement("select");
+      for (const item of plans) {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name;
+        option.selected = data.plan && item.id === data.plan.id;
+        plan.append(option);
+      }
+      plan.addEventListener("change", async () => {
+        await api("/v1/admin/tenants/" + data.id + "/plan", { method: "POST", body: { plan_id: plan.value } });
+        openBoard();
+      });
+      const active = document.createElement("button");
+      active.type = "button";
+      active.className = "quiet";
+      active.textContent = data.is_active ? "Deactivate" : "Activate";
+      active.addEventListener("click", async () => {
+        await api("/v1/admin/tenants/" + data.id + "/active", { method: "POST", body: { is_active: !data.is_active } });
+        openBoard();
+      });
+      controls.append(plan, active);
+      head.append(title, controls);
+
+      const stats = document.createElement("div");
+      stats.className = "stats";
+      stats.append(
+        stat("Spend", money(data.usage.spent_usd) + (data.warning ? " · soft cap" : "")),
+        stat("Tokens", Number(data.usage.spent_tokens).toLocaleString()),
+        stat("Requests", String(data.usage.request_count)),
+        stat("Plan cap", data.plan ? money(data.plan.monthly_budget_usd) + " / " + Number(data.plan.monthly_token_budget).toLocaleString() + " tok" : "unknown"),
+      );
+
+      root.append(head, stats);
+      if (issuedKey) {
+        const banner = document.createElement("div");
+        banner.className = "banner";
+        banner.textContent = "New key, shown once: " + issuedKey;
+        root.append(banner);
+      }
+      root.append(keysSection(data), ledgerSection(data), logsSection(data), replaysSection(data));
+    }
+
+    function keysSection(data) {
+      const section = document.createElement("section");
+      const title = document.createElement("h3");
+      title.textContent = "API keys";
+      const issue = document.createElement("button");
+      issue.type = "button";
+      issue.className = "solid";
+      issue.textContent = "Issue key";
+      issue.addEventListener("click", async () => {
+        const created = await api("/v1/admin/tenants/" + data.id + "/keys", { method: "POST" });
+        if (!created) return;
+        issuedKey = created.api_key;
+        loadDetail(data.id);
+      });
+      section.append(title, issue);
+      if (!data.keys.length) {
+        section.append(note("No keys."));
+        return section;
+      }
+      const table = document.createElement("table");
+      table.append(headRow(["Prefix", ""]));
+      const body = document.createElement("tbody");
+      for (const prefix of data.keys) {
+        const tr = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.textContent = prefix;
+        const action = document.createElement("td");
+        const revoke = document.createElement("button");
+        revoke.type = "button";
+        revoke.className = "danger";
+        revoke.textContent = "Revoke";
+        revoke.addEventListener("click", async () => {
+          await api("/v1/admin/keys/" + encodeURIComponent(prefix), { method: "DELETE" });
+          loadDetail(data.id);
+        });
+        action.append(revoke);
+        tr.append(cell, action);
+        body.append(tr);
+      }
+      table.append(body);
+      section.append(table);
+      return section;
+    }
+
+    function ledgerSection(data) {
+      const section = document.createElement("section");
+      section.append(heading("Ledger"));
+      if (!data.ledger.length) {
+        section.append(note("No ledger rows."));
+        return section;
+      }
+      const table = document.createElement("table");
+      table.append(headRow(["Status", "Month", "Reserved", "Settled", "Tokens"]));
+      const body = document.createElement("tbody");
+      for (const entry of data.ledger) {
+        const tokens = (entry.input_tokens || 0) + (entry.output_tokens || 0);
+        body.append(cells([
+          entry.status,
+          entry.month,
+          money(entry.reserved_usd),
+          entry.actual_usd == null ? "—" : money(entry.actual_usd),
+          entry.status === "settled" ? String(tokens) : String(entry.reserved_tokens) + " held",
+        ]));
+      }
+      table.append(body);
+      section.append(table);
+      return section;
+    }
+
+    function logsSection(data) {
+      const section = document.createElement("section");
+      section.append(heading("Logs"));
+      if (!data.logs.length) {
+        section.append(note("No log events."));
+        return section;
+      }
+      const table = document.createElement("table");
+      table.append(headRow(["Outcome", "Key", "Cost", "Request"]));
+      const body = document.createElement("tbody");
+      for (const event of data.logs) {
+        body.append(cells([
+          event.outcome,
+          event.key_prefix || "—",
+          event.cost_usd == null ? "—" : money(event.cost_usd),
+          event.request_text,
+        ]));
+      }
+      table.append(body);
+      section.append(table);
+      return section;
+    }
+
+    function replaysSection(data) {
+      const section = document.createElement("section");
+      section.append(heading("Stored requests"));
+      if (!data.replays.length) {
+        section.append(note("No stored responses yet. A request is stored when the caller sends an idempotency key."));
+        return section;
+      }
+      for (const replay of data.replays) {
+        const block = document.createElement("div");
+        const line = document.createElement("div");
+        line.textContent = replay.idempotency_key + " · " + replay.model + " · " + (replay.input_tokens + replay.output_tokens) + " tokens";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "quiet";
+        button.textContent = "Replay";
+        const output = document.createElement("div");
+        output.className = "replay";
+        output.hidden = true;
+        output.textContent = replay.text;
+        button.addEventListener("click", () => {
+          output.hidden = !output.hidden;
+          button.textContent = output.hidden ? "Replay" : "Hide";
+        });
+        block.append(line, button, output);
+        section.append(block);
+      }
+      return section;
+    }
+
+    function stat(label, value) {
+      const div = document.createElement("div");
+      div.textContent = label;
+      const strong = document.createElement("strong");
+      strong.textContent = value;
+      div.append(strong);
+      return div;
+    }
+    function heading(text) {
+      const h3 = document.createElement("h3");
+      h3.textContent = text;
+      return h3;
+    }
+    function note(text) {
+      const p = document.createElement("p");
+      p.className = "muted";
+      p.textContent = text;
+      return p;
+    }
+    function headRow(labels) {
+      const head = document.createElement("thead");
+      const tr = document.createElement("tr");
+      for (const label of labels) {
+        const th = document.createElement("th");
+        th.textContent = label;
+        tr.append(th);
+      }
+      head.append(tr);
+      return head;
+    }
+    function cells(values) {
+      const tr = document.createElement("tr");
+      for (const value of values) {
+        const td = document.createElement("td");
+        td.textContent = value;
+        tr.append(td);
+      }
+      return tr;
+    }
+    function money(value) {
+      return "$" + Number(value).toFixed(6);
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        method: options.method || "GET",
+        headers: {
+          "X-Admin-Token": token,
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+        },
+        body: options.body ? JSON.stringify(options.body) : undefined,
+      });
+      if (response.status === 401) {
+        sessionStorage.removeItem(TOKEN_KEY);
+        app.classList.remove("on");
+        gate.style.display = "grid";
+        loginError.textContent = "That admin token was refused.";
+        return null;
+      }
+      if (!response.ok) {
+        loginError.textContent = "The request failed.";
+        return null;
+      }
+      return response.json();
+    }
+  </script>
+</body>
+</html>

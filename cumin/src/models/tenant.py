@@ -6,6 +6,7 @@ class Tenant:
     id: str
     name: str
     is_active: bool = True
+    plan_id: str = "free"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Tenant):

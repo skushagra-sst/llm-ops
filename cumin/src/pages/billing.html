@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cumin ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Fraunces:opsz,wght@9..144,560;9..144,680&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f4ecdf;
+      --ink: #24170f;
+      --rule: #d9cbb6;
+      --saffron: #c65a1e;
+      --green: #1d4a38;
+      --warn: #8a3b12;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% -10%, #f8e2c4 0, transparent 42%),
+        linear-gradient(180deg, #f7f1e6 0%, var(--paper) 40%);
+      font-family: "DM Mono", ui-monospace, monospace;
+    }
+    main {
+      width: min(980px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 48px 0 72px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 18px;
+    }
+    h1 {
+      margin: 0;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 64px;
+      font-weight: 560;
+      letter-spacing: -0.04em;
+      line-height: 0.85;
+    }
+    h1 span { color: var(--saffron); }
+    .lede { margin: 8px 0 0; max-width: 36ch; line-height: 1.45; }
+    form {
+      display: flex;
+      gap: 8px;
+      margin: 28px 0;
+    }
+    input {
+      flex: 1;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      padding: 12px 14px;
+    }
+    button {
+      border: 0;
+      background: var(--ink);
+      color: var(--paper);
+      font: inherit;
+      padding: 12px 18px;
+      cursor: pointer;
+    }
+    button:hover { background: var(--saffron); }
+    nav a { color: var(--ink); }
+    .error { color: var(--warn); min-height: 1.4em; }
+    .hidden { display: none; }
+    .figures {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 28px;
+      align-items: end;
+    }
+    .amount {
+      margin: 0;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 76px;
+      letter-spacing: -0.045em;
+      line-height: 0.9;
+      color: var(--green);
+    }
+    .meta { margin: 10px 0 0; }
+    .meters { display: grid; gap: 16px; }
+    .meter span { display: block; margin-bottom: 6px; }
+    .track { height: 8px; background: var(--rule); }
+    .fill { height: 8px; background: var(--saffron); width: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 36px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    th { font-weight: 500; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .warn { color: var(--warn); }
+    @media (max-width: 720px) {
+      h1 { font-size: 46px; }
+      .amount { font-size: 52px; }
+      .figures, form { grid-template-columns: 1fr; display: grid; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Cu<span>min</span></h1>
+        <p class="lede">Monthly ledger for one tenant. Dollars and tokens, booked only after a call settles.</p>
+      </div>
+      <nav><a href="/admin">All tenants</a></nav>
+    </header>
+    <form id="lookup">
+      <input id="key" type="password" autocomplete="off" placeholder="Paste an API key" required>
+      <button type="submit">Open ledger</button>
+    </form>
+    <p id="error" class="error"></p>
+    <section id="ledger" class="hidden">
+      <div class="figures">
+        <div>
+          <p id="who" class="meta"></p>
+          <p id="spent" class="amount">$0</p>
+          <p id="warning" class="meta"></p>
+        </div>
+        <div class="meters">
+          <div class="meter">
+            <span id="dollar-label"></span>
+            <div class="track"><div id="dollar-fill" class="fill"></div></div>
+          </div>
+          <div class="meter">
+            <span id="token-label"></span>
+            <div class="track"><div id="token-fill" class="fill"></div></div>
+          </div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Outcome</th><th>Model</th><th>Cost</th><th>Request</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </section>
+  </main>
+  <script>
+    const form = document.querySelector("#lookup");
+    const error = document.querySelector("#error");
+    const ledger = document.querySelector("#ledger");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      error.textContent = "";
+      const key = document.querySelector("#key").value.trim();
+      const response = await fetch("/v1/usage", {
+        headers: { Authorization: "Bearer " + key },
+      });
+      if (!response.ok) {
+        ledger.classList.add("hidden");
+        error.textContent = response.status === 401 ? "That key was refused." : "The ledger could not be loaded.";
+        return;
+      }
+      render(await response.json());
+    });
+
+    function render(data) {
+      ledger.classList.remove("hidden");
+      document.querySelector("#who").textContent = data.tenant.name + " · plan " + data.plan.id;
+      document.querySelector("#spent").textContent = money(data.usage.spent_usd);
+      const warning = document.querySelector("#warning");
+      warning.textContent = data.warning ? "Soft budget reached." : "Under the soft budget.";
+      warning.classList.toggle("warn", data.warning);
+      bar("dollar", Number(data.usage.spent_usd), Number(data.plan.monthly_budget_usd), "cost cap");
+      bar("token", data.usage.spent_tokens, data.plan.monthly_token_budget, "token cap");
+      const rows = document.querySelector("#rows");
+      rows.replaceChildren();
+      if (!data.events.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 4;
+        td.textContent = "No requests this month.";
+        tr.append(td);
+        rows.append(tr);
+        return;
+      }
+      for (const item of data.events) {
+        const tr = document.createElement("tr");
+        for (const value of [item.outcome, item.model, item.cost_usd ?? "—", item.request_text]) {
+          const td = document.createElement("td");
+          td.textContent = value;
+          tr.append(td);
+        }
+        rows.append(tr);
+      }
+    }
+
+    function bar(prefix, spent, cap, label) {
+      const ratio = cap > 0 ? Math.min(spent / cap, 1) : 0;
+      document.querySelector("#" + prefix + "-fill").style.width = (ratio * 100) + "%";
+      document.querySelector("#" + prefix + "-label").textContent =
+        prefix === "dollar"
+          ? money(spent) + " of " + money(cap) + " " + label
+          : spent.toLocaleString() + " of " + cap.toLocaleString() + " " + label;
+    }
+
+    function money(value) {
+      return "$" + Number(value).toFixed(6);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+{
+  "label": "checked",
+  "model": "gpt-4o-mini",
+  "prompt": "In one sentence, explain what an API quota is.",
+  "samples": 8,
+  "warmup_discarded": 1,
+  "latency": {
+    "min_ms": 852.5720830075443,
+    "p50_ms": 985.2420409442857,
+    "mean_ms": 1089.298213366419,
+    "p95_ms": 1519.8245829669759,
+    "max_ms": 1519.8245829669759
+  },
+  "ttft": {
+    "min_ms": 608.8342500152066,
+    "p50_ms": 807.682792074047,
+    "mean_ms": 757.5348593964009,
+    "p95_ms": 1005.5898750433698,
+    "max_ms": 1005.5898750433698
+  },
+  "stream_total": {
+    "min_ms": 899.3794579291716,
+    "p50_ms": 1073.3412919798866,
+    "mean_ms": 1070.1156143768458,
+    "p95_ms": 1332.5312500819564,
+    "max_ms": 1332.5312500819564
+  },
+  "latency_runs": [
+    {
+      "latency_ms": 947.0071250107139,
+      "model": "gpt-4o-mini-2024-07-18",
+      "input_tokens": 18,
+      "output_tokens": 36,
+      "cached_input_tokens": 0,
+      "cost_usd": "0.0000243"
+    },
+    {
+      "latency_ms": 1288.5292080463842,
+      "model": "gpt-4o-mini-2024-07-18",
+      "input_tokens": 18,
+      "output_tokens": 34,
+      "cached_input_tokens": 0,
+      "cost_usd": "0.0000231"
+    },
+    {
+      "latency_ms": 1254.4289169600233,
+      "model": "gpt-4o-mini-2024-07-18",
+      "input_tokens": 18,
+      "output_tokens": 31,
+      "cached_input_tokens": 0,
+      "cost_usd": "0.0000213"
+    },
+    {
+      "latency_ms": 948.6811249516904,
+      "model": "gpt-4o-mini-2024-07-18",
+      "input_tokens": 18,
+      "output_tokens": 40,
+      "cached_input_tokens": 0,
+      "cost_usd": "0.0000267"
+    },
+    {
+      "latency_ms": 1519.8245829669759,
+      "model": "gpt-4o-mini-2024-07-18",
+      "input_tokens": 18,
+      "output_tokens": 39,
+      "cached_input_tokens": 0,
+      "cost_usd": "0.0000261"
+    },
+    {
+      "latency_ms": 918.1006250437349,
+      "model": "gpt-4o-mini-2024-07-18",
+      "input_tokens": 18,
+      "output_tokens": 35,
+      "cached_input_tokens": 0,
+      "cost_usd": "0.0000237"
+    },
+    {
+      "latency_ms": 985.2420409442857,
+      "model": "gpt-4o-mini-2024-07-18",
+      "input_tokens": 18,
+      "output_tokens": 40,
+      "cached_input_tokens": 0,
+      "cost_usd": "0.0000267"
+    },
+    {
+      "latency_ms": 852.5720830075443,
+      "model": "gpt-4o-mini-2024-07-18",
+      "input_tokens": 18,
+      "output_tokens": 37,
+      "cached_input_tokens": 0,
+      "cost_usd": "0.0000249"
+    }
+  ],
+  "ttft_runs": [
+    {
+      "ttft_ms": 816.1262080539018,
+      "stream_total_ms": 1025.9988330071792
+    },
+    {
+      "ttft_ms": 1005.5898750433698,
+      "stream_total_ms": 1332.5312500819564
+    },
+    {
+      "ttft_ms": 682.4610420735553,
+      "stream_total_ms": 1073.3412919798866
+    },
+    {
+      "ttft_ms": 807.682792074047,
+      "stream_total_ms": 1142.373792012222
+    },
+    {
+      "ttft_ms": 815.3486249502748,
+      "stream_total_ms": 1231.868666014634
+    },
+    {
+      "ttft_ms": 688.7646249961108,
+      "stream_total_ms": 931.5162909915671
+    },
+    {
+      "ttft_ms": 635.4714579647407,
+      "stream_total_ms": 923.9153329981491
+    },
+    {
+      "ttft_ms": 608.8342500152066,
+      "stream_total_ms": 899.3794579291716
+    }
+  ]
+}
