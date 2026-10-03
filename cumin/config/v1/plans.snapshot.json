@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "status": "Documentation snapshot only; runtime still reads src/models/plan.py and database PlanStore.",
+  "plans": {
+    "zero": {
+      "id": "zero",
+      "name": "Zero",
+      "monthly_budget_usd": "0.00",
+      "soft_budget_usd": "0.00",
+      "request_reserve_usd": "0.05",
+      "requests_per_minute": 10,
+      "monthly_token_budget": 0,
+      "request_reserve_tokens": 1
+    },
+    "free": {
+      "id": "free",
+      "name": "Free",
+      "monthly_budget_usd": "1.00",
+      "soft_budget_usd": "0.80",
+      "request_reserve_usd": "0.05",
+      "requests_per_minute": 60,
+      "monthly_token_budget": 500000,
+      "request_reserve_tokens": 8000
+    },
+    "pro": {
+      "id": "pro",
+      "name": "Pro",
+      "monthly_budget_usd": "50.00",
+      "soft_budget_usd": "40.00",
+      "request_reserve_usd": "0.25",
+      "requests_per_minute": 600,
+      "monthly_token_budget": 20000000,
+      "request_reserve_tokens": 16000
+    }
+  }
+}
