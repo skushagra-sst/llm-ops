@@ -35,6 +35,7 @@ class AuditEvent:
     response_text: str | None
     id: int | None = None
     created_at: str | None = None
+    latency_ms: float | None = None
 
 
 @dataclass(frozen=True)
@@ -140,13 +141,14 @@ class AuditLog:
         cost_usd: Decimal | None,
         request_text: str,
         response_text: str | None,
+        latency_ms: float | None = None,
     ) -> None:
         self._db.write(
             """
             INSERT INTO audit (
-                tenant_id, key_prefix, model, outcome, cost_usd, request_text, response_text, created_at
+                tenant_id, key_prefix, model, outcome, cost_usd, request_text, response_text, created_at, latency_ms
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 tenant_id,
@@ -157,6 +159,7 @@ class AuditLog:
                 redact(request_text),
                 None if response_text is None else redact(response_text),
                 utc_now(),
+                latency_ms,
             ),
         )
 
@@ -196,4 +199,5 @@ def _event(row) -> AuditEvent:
         response_text=row["response_text"],
         id=row["id"],
         created_at=row["created_at"],
+        latency_ms=row["latency_ms"],
     )
