@@ -67,12 +67,6 @@ Exact samples are in [benchmarks/checked_baseline.json](benchmarks/checked_basel
 uv run --env-file .env python scripts/benchmark_checked.py
 ```
 
-## Final-project implementation status
-
-Cumin is the selected Group 14 implementation. Earlier sections and baseline
-results are retained unchanged. This addition documents the current source
-and new offline measurements; it does not claim the application is bug-free.
-
 ## Architecture and request flow
 
 ```text
@@ -159,21 +153,6 @@ The eval command intentionally exits 1 until the reported feature regressions
 are fixed. It writes all results before exiting. Do not substitute a passing
 subset for the full score. Existing `benchmark_checked.py` and
 `benchmark_unchecked.py` call OpenAI and are not part of this offline run.
-
-## Versioned prompt and plan references
-
-[Prompt v1](prompts/v1/summarize.snapshot.json) and
-[plan defaults v1](config/v1/plans.snapshot.json) are additive snapshots of
-current code. They are **not runtime-loaded config**. Wiring them into feature
-code or changing behavior requires owner approval; DB plan edits may differ.
-
-## Resume description (draft for team review)
-
-Built Cumin, a multi-tenant LLM API with per-tenant and per-key cost attribution,
-USD/token quota reservations, rate limiting, moderation, audit logs and a React
-admin console. Added a reproducible offline policy suite and 500-request
-benchmarks at two concurrency levels, with explicit regression reporting and
-no paid model calls.
 
 ## Submission caveats
 
