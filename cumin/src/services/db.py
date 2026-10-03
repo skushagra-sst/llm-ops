@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS audit (
     model TEXT NOT NULL,
     outcome TEXT NOT NULL,
     cost_usd TEXT,
+    latency_ms REAL,
     request_text TEXT NOT NULL,
     response_text TEXT,
     created_at TEXT
@@ -75,6 +76,7 @@ CREATE TABLE IF NOT EXISTS plans (
 _ADDED_COLUMNS = (
     ("api_keys", "created_at", "TEXT"),
     ("audit", "created_at", "TEXT"),
+    ("audit", "latency_ms", "REAL"),
 )
 
 
