@@ -35,7 +35,19 @@ def main():
             f.handler.handle("bad-key", MESSAGES, "fake")
         except Exception:
             pass
+        from src.app import _summary_json, _event_json, create_app
+        payload = _summary_json(first)
+        assert payload["handler_latency_ms"] == first.latency_ms
+        assert payload["cost_usd"] == "0.015"
+        app = create_app(f.db, f.llm, admin_token="offline-test")
+        def endpoint(path):
+            return next(r.endpoint for r in app.routes if getattr(r, "path", None) == path)
+        from src.services.plans import PlanStore
+        PlanStore(f.db).create(f.plan)
+        usage = endpoint("/v1/usage")(authorization="Bearer " + f.keys["alpha"])
+        assert all(e["handler_latency_ms"] is not None for e in usage["events"])
         events = f.handler.audit.events
+        assert _event_json(events[0])["handler_latency_ms"] == events[0].latency_ms
         assert {e.outcome for e in events} == {"completed", "idempotent_replay", "rate_limited", "unauthenticated"}
         assert all(e.latency_ms is not None and e.latency_ms >= 0 for e in events)
     finally:
