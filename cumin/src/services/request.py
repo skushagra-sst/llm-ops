@@ -1,4 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from contextvars import ContextVar
+from functools import wraps
+import time
 from decimal import Decimal
 
 from src.models.llm import Completion, LLM, Message
@@ -11,6 +14,25 @@ from src.services.rate_limit import RateLimitExceeded, RateLimiter
 from src.services.tenant import AuthenticationError, TenantManager
 
 
+_REQUEST_STARTED: ContextVar[float | None] = ContextVar("cumin_request_started", default=None)
+
+
+def _timed_request(function):
+    """One handler-only timer across handle -> handle_tenant; thread/task local."""
+    @wraps(function)
+    def timed(*args, **kwargs):
+        if _REQUEST_STARTED.get() is not None:
+            return function(*args, **kwargs)
+        started = time.perf_counter()
+        token = _REQUEST_STARTED.set(started)
+        try:
+            result = function(*args, **kwargs)
+            return replace(result, latency_ms=(time.perf_counter() - started) * 1000)
+        finally:
+            _REQUEST_STARTED.reset(token)
+    return timed
+
+
 @dataclass(frozen=True)
 class RequestResult:
     completion: Completion
@@ -18,6 +40,7 @@ class RequestResult:
     warning: bool
     replayed: bool
     cost_usd: Decimal = Decimal(0)
+    latency_ms: float | None = None
 
 
 class RequestHandler:
@@ -39,6 +62,7 @@ class RequestHandler:
         self.idempotency = idempotency
         self.moderator = moderator or PatternModerator()
 
+    @_timed_request
     def handle(
         self,
         raw_key: str,
@@ -55,6 +79,7 @@ class RequestHandler:
             raise
         return self.handle_tenant(tenant, prefix, messages, model, idempotency_key)
 
+    @_timed_request
     def handle_tenant(
         self,
         tenant: Tenant,
@@ -158,6 +183,7 @@ class RequestHandler:
             cost_usd=cost_usd,
             request_text=request_text,
             response_text=response_text,
+            latency_ms=None if _REQUEST_STARTED.get() is None else (time.perf_counter() - _REQUEST_STARTED.get()) * 1000,
         )
 
 
