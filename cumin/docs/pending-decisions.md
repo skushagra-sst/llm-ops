@@ -1,0 +1,54 @@
+# Feature changes requiring owner approval
+
+No feature code was changed while adding these deliverables.
+
+## Budget reservation does not cap actual usage
+
+`BudgetGate.reserve` protects admission using estimated per-request USD/tokens.
+`settle` accepts larger actual usage without enforcing a bound. The regression
+cases show $0.03 actual under a $0.02 monthly cap, and 15 tokens under a 10-token
+cap. Production plans have larger reserves, but there is no enforced maximum
+provider output proving usage stays within them.
+
+Decision needed: enforce an input/output bound and reserve its worst-case cost;
+define how to handle unavoidable provider costs above the reserve. Simply
+rejecting a settlement after inference does not undo a paid provider call.
+Feature work would touch budget/request/provider code. Approval is required.
+
+## Concurrent idempotency race
+
+`RequestHandler` checks cache, calls provider, settles and then saves a result.
+Two in-flight requests with the same tenant/key can both miss and charge. The
+regression synchronizes two local fake calls and observes two ledger entries.
+
+Decision needed: atomically claim the tenant/key before inference, then wait
+or return a conflict while in flight, with failure/recovery handling. A local
+lock only covers one process; DB-backed ownership is needed across workers.
+Approval is required before changing the handler/store/schema.
+
+## Per-request latency and response cost
+
+The playground returns measured latency and cost, but audit stores no latency.
+Public `/v1/summarize` returns usage and cumulative spend, not this request's
+cost or latency. Benchmark samples now record both, but do not add production
+observability. Approval is needed for a timing field, audit schema migration,
+and API response changes. Existing historical rows must remain intact.
+
+## Runtime versioned config is not yet wired
+
+`config/v1/plans.snapshot.json` and `prompts/v1/summarize.snapshot.json` preserve
+current defaults/template as versioned documentation. Runtime still reads the
+Python defaults, the DB-backed PlanStore, and `_summary_messages` in app.py.
+Connecting the snapshots to runtime requires feature-code edits and a policy
+for DB plan edits and version attribution. Approval is required.
+
+## Non-feature work still needed from the team
+
+- Review/edit the assistant-authored candidate evaluation set to meet the
+  hand-written requirement; add human summary-quality cases if applicable.
+- Confirm the submission title/team/resume wording and public repo version.
+- Committed pycache and the old "two project options" text were not removed
+  or rewritten. No root README edits, deletion, or untracking was done.
+- Existing real-model scripts spend money; do not run without approval.
+- Deployment is optional. No hosted service, real-LLM load run, tracing backend
+  or Redis validation was set up.
