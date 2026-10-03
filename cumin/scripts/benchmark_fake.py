@@ -1,5 +1,6 @@
 """Measure offline RequestHandler overhead. Not HTTP or real-model performance."""
 import argparse
+import csv
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -72,6 +73,17 @@ def main():
               "paid_api_calls": 0, "percentile_method": "nearest rank ceil(N*p/100), successful calls only",
               "scenarios": [measure(args.samples, c) for c in args.concurrency]}
     args.output.parent.mkdir(parents=True, exist_ok=True)
+    rows = []
+    samples_path = args.output.with_name(args.output.stem + "_samples.csv")
+    for scenario in report["scenarios"]:
+        rows.extend({"concurrency": scenario["concurrency"], **run} for run in scenario.pop("runs"))
+        scenario["raw_samples_file"] = samples_path.name
+    with samples_path.open("w", newline="") as stream:
+        fields = sorted({key for row in rows for key in row})
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+
     args.output.write_text(json.dumps(report, indent=2) + "\n")
     for s in report["scenarios"]:
         print({k: s[k] for k in ("samples", "concurrency", "successes", "failures", "latency_ms", "throughput_successful_requests_per_second")})
