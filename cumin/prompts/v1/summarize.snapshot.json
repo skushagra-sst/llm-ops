@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "status": "Documentation snapshot only; runtime still reads src/app.py _summary_messages.",
+  "system": "Summarize the page in a few sentences. Use only the page text.",
+  "user_template": "URL: {url}\n\n{page}"
+}
