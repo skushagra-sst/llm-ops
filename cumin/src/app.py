@@ -396,7 +396,7 @@ def create_app(
         _total, events = audit.search(tenant_id, _log_filter(kind, key, q, since, until), limit=10_000)
         buffer = io.StringIO()
         writer = csv.writer(buffer)
-        writer.writerow(["time", "event", "key", "model", "cost_usd", "request", "response"])
+        writer.writerow(["time", "event", "key", "model", "cost_usd", "request", "response", "handler_latency_ms"])
         for event in events:
             writer.writerow(
                 [
@@ -407,6 +407,7 @@ def create_app(
                     "" if event.cost_usd is None else str(event.cost_usd),
                     event.request_text,
                     event.response_text or "",
+                    "" if event.latency_ms is None else event.latency_ms,
                 ]
             )
         return Response(
@@ -469,6 +470,7 @@ def create_app(
                     "model": event.model,
                     "cost_usd": None if event.cost_usd is None else str(event.cost_usd),
                     "request_text": event.request_text,
+                    "handler_latency_ms": event.latency_ms,
                 }
                 for event in audit.for_tenant(tenant.id, limit=12)
             ],
@@ -531,6 +533,8 @@ def _summary_json(result) -> dict:
         "spent_usd": str(result.spent_usd),
         "warning": result.warning,
         "replayed": result.replayed,
+        "cost_usd": str(result.cost_usd),
+        "handler_latency_ms": result.latency_ms,
     }
 
 
@@ -560,6 +564,7 @@ def _event_json(event: AuditEvent) -> dict:
     return {
         "id": event.id,
         "created_at": event.created_at,
+        "handler_latency_ms": event.latency_ms,
         "outcome": event.outcome,
         "model": event.model,
         "key_prefix": event.key_prefix,
