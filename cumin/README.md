@@ -208,3 +208,21 @@ PYTHONDONTWRITEBYTECODE=1 uv run --frozen python scripts/check_latency.py
 The timing/migration checks pass. The original policy suite remains 13/16:
 USD/token overshoot and concurrent idempotency are still failing and deliberately
 unchanged pending the owner's later decision.
+
+### Post-latency regression run
+
+The original load table above is the pre-latency snapshot (source commit in its
+JSON). After adding latency persistence, a separate run at source commit
+`36c8c3b` still completed 1000/1000 calls:
+
+| Concurrency | Requests | p50 ms | p95 ms | p99 ms | req/s |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 500 | 0.575 | 1.074 | 1.375 | 1657.9 |
+| 8 | 500 | 5.311 | 13.415 | 18.607 | 1257.4 |
+
+[Post-change report](benchmarks/fake_load_after_latency_v1.json) and
+[raw CSV samples](benchmarks/fake_load_after_latency_v1_samples.csv).
+Same synthetic $0.015/request; no actual spend. Differences reflect both
+instrumentation and run-to-run noise, not a controlled causal overhead study.
+[Post-change policy results](eval/latency_regression_results.json) remain 13/16,
+with the same three failed cases corresponding to the two unresolved bugs.
