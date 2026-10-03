@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "authorship": "Assistant-authored candidate fixtures; team must review/edit for hand-written course requirement",
+  "scoring": "One point per required invariant; all cases count equally, including regressions. Failure exit code 1.",
+  "cases": [
+    {
+      "id": "usd_boundary",
+      "expected": "Five $0.02 holds fill $0.10 exactly; sixth blocked; release uncharges"
+    },
+    {
+      "id": "token_boundary",
+      "expected": "Two 15-token calls fill 30 exactly; third blocked"
+    },
+    {
+      "id": "burst_reserve",
+      "expected": "Forty simultaneous reservations admit exactly five within $0.10"
+    },
+    {
+      "id": "rate_window",
+      "expected": "Two hits allowed; third blocked; oldest expires at 60 seconds"
+    },
+    {
+      "id": "rate_handler",
+      "expected": "Third request blocked before inference when RPM is two"
+    },
+    {
+      "id": "sequential_idempotency",
+      "expected": "Sequential retry returns cache with only one provider call and charge"
+    },
+    {
+      "id": "tenant_isolation",
+      "expected": "Same idempotency key for two tenants creates independent calls, usage and audit"
+    },
+    {
+      "id": "provider_usage_cost",
+      "expected": "Mock SDK usage (100 input, 40 cached, 20 output) yields $0.000024 at repository rates and settles to tenant"
+    },
+    {
+      "id": "invalid_cached_usage",
+      "expected": "More cached than input tokens is rejected"
+    },
+    {
+      "id": "input_moderation",
+      "expected": "Known instruction-override pattern rejected before inference and reservation"
+    },
+    {
+      "id": "output_moderation",
+      "expected": "Blocked model output releases reservation without charging tenant"
+    },
+    {
+      "id": "provider_error_release",
+      "expected": "Provider exception releases reservation"
+    },
+    {
+      "id": "invalid_auth",
+      "expected": "Invalid API key blocked before inference"
+    },
+    {
+      "id": "actual_cost_over_reserve",
+      "expected": "Actual cost above reservation must not overspend monthly cap"
+    },
+    {
+      "id": "actual_tokens_over_reserve",
+      "expected": "Actual tokens above reservation must not exceed monthly token cap"
+    },
+    {
+      "id": "concurrent_idempotency",
+      "expected": "Two simultaneous same-key requests must produce one provider call and charge"
+    }
+  ]
+}
