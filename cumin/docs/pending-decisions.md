@@ -52,3 +52,11 @@ for DB plan edits and version attribution. Approval is required.
 - Existing real-model scripts spend money; do not run without approval.
 - Deployment is optional. No hosted service, real-LLM load run, tracing backend
   or Redis validation was set up.
+
+## Update: latency persistence approved and implemented
+
+The earlier latency gap above is retained as historical context. On October 3,
+the owner approved issue 3 only. Audit now stores nullable handler-only latency;
+public summary/usage and admin log JSON/CSV expose it. Budget settlement and
+idempotency flow are unchanged. Existing audit rows remain NULL.
+See the README's timing scope and `scripts/check_latency.py`.
