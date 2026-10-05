@@ -1,13 +1,13 @@
 {
   "suite_version": "1.0.0",
   "authorship": "Assistant-authored candidate fixtures; team must review/edit for hand-written course requirement",
-  "measured_at": "2026-10-03T13:27:09.848922+00:00",
-  "source_commit": "8f7cb81604ee724b60145aa28e5083cff07e7916",
+  "measured_at": "2026-10-05T11:26:39.972086+00:00",
+  "source_commit": "481d75b98b16edb29aa38b6fa06a0723db809952",
   "mode": "offline unit/integration policy checks; no HTTP, Redis or real LLM",
   "paid_api_calls": 0,
-  "passed": 13,
+  "passed": 15,
   "total": 16,
-  "pass_rate": 0.8125,
+  "pass_rate": 0.9375,
   "results": [
     {
       "id": "usd_boundary",
@@ -16,7 +16,7 @@
         "provider_calls": 0,
         "alpha_cost_usd": "0"
       },
-      "duration_ms": 1.152
+      "duration_ms": 6.239
     },
     {
       "id": "token_boundary",
@@ -25,7 +25,7 @@
         "provider_calls": 2,
         "alpha_cost_usd": "0.030"
       },
-      "duration_ms": 0.774
+      "duration_ms": 0.668
     },
     {
       "id": "burst_reserve",
@@ -34,7 +34,7 @@
         "provider_calls": 0,
         "alpha_cost_usd": "0.10"
       },
-      "duration_ms": 12.567
+      "duration_ms": 4.315
     },
     {
       "id": "rate_window",
@@ -42,7 +42,7 @@
       "details": {
         "window_seconds": 60
       },
-      "duration_ms": 0.009
+      "duration_ms": 0.006
     },
     {
       "id": "rate_handler",
@@ -51,7 +51,7 @@
         "provider_calls": 2,
         "alpha_cost_usd": "0.030"
       },
-      "duration_ms": 0.745
+      "duration_ms": 0.611
     },
     {
       "id": "sequential_idempotency",
@@ -60,7 +60,7 @@
         "provider_calls": 1,
         "alpha_cost_usd": "0.015"
       },
-      "duration_ms": 0.725
+      "duration_ms": 0.577
     },
     {
       "id": "tenant_isolation",
@@ -69,7 +69,7 @@
         "provider_calls": 2,
         "alpha_cost_usd": "0.015"
       },
-      "duration_ms": 0.813
+      "duration_ms": 0.537
     },
     {
       "id": "provider_usage_cost",
@@ -78,13 +78,13 @@
         "cost_usd": "0.000024",
         "rates": "existing repository rates, not live pricing"
       },
-      "duration_ms": 0.537
+      "duration_ms": 0.392
     },
     {
       "id": "invalid_cached_usage",
       "passed": true,
       "details": {},
-      "duration_ms": 0.006
+      "duration_ms": 0.004
     },
     {
       "id": "input_moderation",
@@ -93,7 +93,7 @@
         "provider_calls": 0,
         "alpha_cost_usd": "0"
       },
-      "duration_ms": 0.467
+      "duration_ms": 0.349
     },
     {
       "id": "output_moderation",
@@ -102,7 +102,7 @@
         "provider_calls": 1,
         "alpha_cost_usd": "0"
       },
-      "duration_ms": 0.501
+      "duration_ms": 0.364
     },
     {
       "id": "provider_error_release",
@@ -111,7 +111,7 @@
         "provider_calls": 0,
         "alpha_cost_usd": "0"
       },
-      "duration_ms": 0.586
+      "duration_ms": 0.427
     },
     {
       "id": "invalid_auth",
@@ -120,25 +120,31 @@
         "provider_calls": 0,
         "alpha_cost_usd": "0"
       },
-      "duration_ms": 0.373
+      "duration_ms": 0.324
     },
     {
       "id": "actual_cost_over_reserve",
-      "passed": false,
-      "error": "AssertionError: actual spend 0.030 exceeds monthly cap 0.02",
-      "duration_ms": 0.602
+      "passed": true,
+      "details": {
+        "provider_calls": 1,
+        "alpha_cost_usd": "0.02"
+      },
+      "duration_ms": 0.368
     },
     {
       "id": "actual_tokens_over_reserve",
-      "passed": false,
-      "error": "AssertionError: actual tokens 15 exceed monthly cap 10",
-      "duration_ms": 0.489
+      "passed": true,
+      "details": {
+        "provider_calls": 1,
+        "alpha_cost_usd": "0.015"
+      },
+      "duration_ms": 0.519
     },
     {
       "id": "concurrent_idempotency",
       "passed": false,
       "error": "AssertionError: same concurrent key made 2 provider calls and 2 charges",
-      "duration_ms": 1.787
+      "duration_ms": 0.755
     }
   ]
 }

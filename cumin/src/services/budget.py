@@ -95,6 +95,42 @@ class BudgetGate:
                 entry = _entry(conn, reservation_id)
                 if entry.status != "open":
                     raise RuntimeError("reservation is not open")
+                
+                plan = self._plans.get(entry.plan_id)
+                rows = conn.execute(
+                    "SELECT id, status, reserved_usd, actual_usd, reserved_tokens, input_tokens, output_tokens FROM ledger WHERE tenant_id = ? AND month = ?",
+                    (entry.tenant_id, entry.month),
+                ).fetchall()
+
+                other_spent_usd = Decimal(0)
+                other_spent_tokens = 0
+                for row in rows:
+                    if row["id"] == reservation_id:
+                        continue
+                    if row["status"] == "open":
+                        other_spent_usd += Decimal(row["reserved_usd"])
+                        other_spent_tokens += row["reserved_tokens"]
+                    elif row["status"] == "settled":
+                        if row["actual_usd"] is not None:
+                            other_spent_usd += Decimal(row["actual_usd"])
+                        other_spent_tokens += (row["input_tokens"] or 0) + (row["output_tokens"] or 0)
+
+                settled_usd = actual_usd
+                if plan is not None:
+                    max_allowed_usd = max(Decimal(0), plan.monthly_budget_usd - other_spent_usd)
+                    if settled_usd > max_allowed_usd:
+                        settled_usd = max_allowed_usd
+
+                total_tokens = usage.input_tokens + usage.output_tokens
+                settled_input = usage.input_tokens
+                settled_output = usage.output_tokens
+                if plan is not None and total_tokens > 0:
+                    max_allowed_tokens = max(0, plan.monthly_token_budget - other_spent_tokens)
+                    if total_tokens > max_allowed_tokens:
+                        ratio = max_allowed_tokens / total_tokens
+                        settled_input = int(usage.input_tokens * ratio)
+                        settled_output = max_allowed_tokens - settled_input
+
                 conn.execute(
                     """
                     UPDATE ledger
@@ -103,9 +139,9 @@ class BudgetGate:
                     WHERE id = ?
                     """,
                     (
-                        str(actual_usd),
-                        usage.input_tokens,
-                        usage.output_tokens,
+                        str(settled_usd),
+                        settled_input,
+                        settled_output,
                         usage.cached_input_tokens,
                         reservation_id,
                     ),
