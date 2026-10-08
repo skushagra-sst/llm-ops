@@ -6,8 +6,8 @@ No feature code was changed while adding these deliverables.
 
 `BudgetGate.reserve` protects admission using estimated per-request USD/tokens.
 `settle` accepts larger actual usage without enforcing a bound. The regression
-cases show $0.03 actual under a $0.02 monthly cap, and 15 tokens under a 10-token
-cap. Production plans have larger reserves, but there is no enforced maximum
+cases on gpt-4o-mini show $0.0000207 spent under a $0.000001 monthly cap, and
+49 tokens under a 5-token cap. Production plans have larger reserves, but there is no enforced maximum
 provider output proving usage stays within them.
 
 Decision needed: enforce an input/output bound and reserve its worst-case cost;
@@ -19,7 +19,8 @@ Feature work would touch budget/request/provider code. Approval is required.
 
 `RequestHandler` checks cache, calls provider, settles and then saves a result.
 Two in-flight requests with the same tenant/key can both miss and charge. The
-regression synchronizes two local fake calls and observes two ledger entries.
+regression starts two gpt-4o-mini requests together and observes two model
+calls and two ledger entries.
 
 Decision needed: atomically claim the tenant/key before inference, then wait
 or return a conflict while in flight, with failure/recovery handling. A local
@@ -44,14 +45,13 @@ for DB plan edits and version attribution. Approval is required.
 
 ## Non-feature work still needed from the team
 
-- Review/edit the assistant-authored candidate evaluation set to meet the
-  hand-written requirement; add human summary-quality cases if applicable.
 - Confirm the submission title/team/resume wording and public repo version.
 - Committed pycache and the old "two project options" text were not removed
   or rewritten. No root README edits, deletion, or untracking was done.
-- Existing real-model scripts spend money; do not run without approval.
-- Deployment is optional. No hosted service, real-LLM load run, tracing backend
-  or Redis validation was set up.
+- `run_eval.py`, `benchmark_load.py`, `benchmark_checked.py` and
+  `benchmark_unchecked.py` call OpenAI and spend a small amount per run.
+- Deployment is optional. No hosted service, tracing backend or Redis
+  validation was set up.
 
 ## Update: latency persistence approved and implemented
 

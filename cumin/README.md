@@ -99,65 +99,81 @@ Admin console -> token-protected /v1/admin/* -> tenant/plan management
 - Sequential idempotent retries avoid another model call/charge. Concurrent
   retries with the same key are not atomic and can double-charge.
 - Pattern moderation is deterministic but narrow. The production launcher
-  uses OpenAI inference/moderation. The new tests use local FakeLLM and pattern
-  moderation only. Public URL fetching happens before handler authentication
-  and replay lookup; these measurements do not include fetching.
+  uses OpenAI inference/moderation, and so do the evaluation and load
+  benchmark. Public URL fetching happens before handler authentication and
+  replay lookup; these measurements do not include fetching.
 - The dashboard provides costs, usage and audit logs. Playground responses
   include latency; audit now persists handler-only latency; no tracing backend was
   added. See [pending decisions](docs/pending-decisions.md).
 
-## Offline evaluation and scoring
+## Unit tests
 
-Candidate fixtures: [eval/cases.json](eval/cases.json).
-Runner: [scripts/run_eval.py](scripts/run_eval.py).
-Method and limits: [eval/README.md](eval/README.md).
-Recorded results: [eval/results.json](eval/results.json).
-
-**13/16 invariants passed (81.25%)** on the recorded source commit. All three
-regressions count as failures: actual USD beyond reserve/cap, actual tokens
-beyond reserve/cap, and concurrent same-key double-charging. This is policy
-correctness evaluation, not a summary-quality or broad security score.
-The fixtures are assistant-authored candidates. Team review/editing is still
-required for the course's hand-written evaluation requirement.
-
-## Offline load benchmark (FakeLLM)
-
-Each scenario has 500 measured requests and 10 discarded warmups. Nearest-rank
-p50/p95/p99, successful requests only. Two tenants alternate requests. Measured
-on the execution environment recorded in the JSON, through RequestHandler and
-shared in-memory SQLite, not through HTTP. No provider, fetching, Redis, disk
-I/O, real moderation, or deployment is included. This measures local policy
-path overhead, not production end-to-end model latency or capacity.
-
-| Concurrency | Requests | Success | p50 ms | p95 ms | p99 ms | req/s | Synthetic cost/request |
-|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | 500 | 500/500 | 0.516 | 0.922 | 0.978 | 1749.6 | $0.015 |
-| 8 | 500 | 500/500 | 5.362 | 11.055 | 15.311 | 1435.1 | $0.015 |
-
-[Raw samples, environment and tenant attribution](benchmarks/fake_load_v1.json).
-Each tenant made 250 measured calls for $3.750 simulated ledger cost in each
-scenario. Alpha additionally has $0.150 of discarded warmup calls. FakeLLM
-uses 10 input + 5 output tokens at $0.001/token: **no money was spent**.
-These costs must not be presented as real OpenAI cost per request. The eight
-real-model baseline samples above are historical and cannot establish p99.
-
-Reproduce from `cumin/` without `.env` or credentials:
+`tests/` covers `BudgetGate` and the budget path through `RequestHandler`:
+holds, exact cap boundaries, release, settlement errors, token caps, the soft
+warning, monthly reset, tenant separation, concurrent reserves, and billing
+around moderation, provider errors and replays. They use a local fake model,
+so they need no API key. The three known regressions are marked `xfail`
+(strict), so the suite fails once one is fixed and its marker should be removed.
 
 ```bash
 uv sync --frozen
-PYTHONDONTWRITEBYTECODE=1 uv run --frozen python scripts/run_eval.py
-PYTHONDONTWRITEBYTECODE=1 uv run --frozen python scripts/benchmark_fake.py --samples 500 --concurrency 1 8
+uv run --frozen pytest
 ```
 
-The eval command intentionally exits 1 until the reported feature regressions
-are fixed. It writes all results before exiting. Do not substitute a passing
-subset for the full score. Existing `benchmark_checked.py` and
-`benchmark_unchecked.py` call OpenAI and are not part of this offline run.
+## Evaluation
+
+Hand-written cases in [eval/cases.json](eval/cases.json), run on `gpt-4o-mini`
+by [scripts/run_eval.py](scripts/run_eval.py) through `RequestHandler` with
+OpenAI inference and moderation. Method and limits are in
+[eval/README.md](eval/README.md); every summary and score from the recorded
+run is in [eval/results.json](eval/results.json).
+
+- **Summary quality:** ten pages, each with required facts, forbidden phrases
+  and a word limit, run three times each. **25/30 trials** passed and
+  **136/141 checks** passed. The model never followed the instruction planted
+  in a page. Misses: the council vote count left out (three times), one
+  summary over the word limit, and one that omitted the new signalling.
+- **Policy:** **14/17 invariants** passed. The three failures are the known
+  regressions: actual USD above the reservation and cap, actual tokens above
+  the reservation and cap, and concurrent same-key requests charging twice.
+
+The run made 49 model calls for $0.0025. The command exits 1 while any case
+fails and writes all results first.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 uv run --frozen --env-file .env python scripts/run_eval.py
+```
+
+## Load benchmark
+
+[scripts/benchmark_load.py](scripts/benchmark_load.py) sends the summary
+prompt for the `release_notes` eval page to `gpt-4o-mini` through
+`RequestHandler` with OpenAI moderation, using in-memory SQLite and the local
+limiter. HTTP and URL fetching are excluded. Each scenario has 200 measured
+requests after three discarded warmups, with two tenants alternating.
+Percentiles are nearest-rank over successful requests.
+
+| Concurrency | Success | p50 | p95 | p99 | req/s | Cost/request |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 200/200 | 2373 ms | 2837 ms | 3415 ms | 0.41 | $0.000097 |
+| 8 | 200/200 | 2409 ms | 3240 ms | 6964 ms | 3.03 | $0.000096 |
+
+Requests averaged 183 input and about 115 output tokens. At concurrency 8,
+throughput rises about 7x while the median holds, and the tail grows. Each
+tenant was billed for its own 100 requests in each scenario (about $0.0097
+each). The latency is mostly OpenAI: the model call plus two moderation
+calls per request. Raw samples are in
+[benchmarks/load_gpt-4o-mini.json](benchmarks/load_gpt-4o-mini.json) and
+[benchmarks/load_gpt-4o-mini_samples.csv](benchmarks/load_gpt-4o-mini_samples.csv).
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 uv run --frozen --env-file .env python scripts/benchmark_load.py --samples 200 --concurrency 1 8
+```
 
 ## Submission caveats
 
-Live deployment is optional and was not done. Human ownership of the evaluation
-set, actual summary-quality scoring if applicable, runtime config wiring, and the three feature regressions remain open.
+Live deployment is optional and was not done. Runtime config wiring and the
+three feature regressions remain open.
 [Required decisions and unchanged-code evidence](docs/pending-decisions.md).
 
 ## Latency persistence (owner-approved issue 3)
@@ -184,24 +200,6 @@ is available in the log API/export rather than a new chart.
 PYTHONDONTWRITEBYTECODE=1 uv run --frozen python scripts/check_latency.py
 ```
 
-The timing/migration checks pass. The original policy suite remains 13/16:
-USD/token overshoot and concurrent idempotency are still failing and deliberately
-unchanged pending the owner's later decision.
-
-### Post-latency regression run
-
-The original load table above is the pre-latency snapshot (source commit in its
-JSON). After adding latency persistence, a separate run at source commit
-`36c8c3b` still completed 1000/1000 calls:
-
-| Concurrency | Requests | p50 ms | p95 ms | p99 ms | req/s |
-|---:|---:|---:|---:|---:|---:|
-| 1 | 500 | 0.575 | 1.074 | 1.375 | 1657.9 |
-| 8 | 500 | 5.311 | 13.415 | 18.607 | 1257.4 |
-
-[Post-change report](benchmarks/fake_load_after_latency_v1.json) and
-[raw CSV samples](benchmarks/fake_load_after_latency_v1_samples.csv).
-Same synthetic $0.015/request; no actual spend. Differences reflect both
-instrumentation and run-to-run noise, not a controlled causal overhead study.
-[Post-change policy results](eval/latency_regression_results.json) remain 13/16,
-with the same three failed cases corresponding to the two unresolved bugs.
+The timing and migration checks pass. USD/token overshoot and concurrent
+idempotency are still failing in the evaluation and deliberately unchanged
+pending the owner's decision.

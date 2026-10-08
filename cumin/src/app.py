@@ -496,6 +496,10 @@ def _summary_messages(url: str) -> list[Message]:
         page = fetch_page(url)
     except FetchError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return summary_prompt(url, page)
+
+
+def summary_prompt(url: str, page: str) -> list[Message]:
     return [
         Message(
             role="system",

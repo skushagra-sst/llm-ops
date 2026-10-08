@@ -1,42 +1,96 @@
-# Offline policy evaluation v1
+# Evaluation v2
 
-`cases.json` is an assistant-authored candidate set, not a claim that the team
-hand-wrote it. Team members must review, edit and take ownership of the final
-set and scoring method before submitting it under the course requirement.
-This set evaluates API policy/cost correctness, not the quality of generated
-summaries. A human-written summary-quality set and human scoring are still
-needed if the team evaluates that feature.
+`cases.json` holds hand-written cases in two groups. Every case that needs a
+model runs on `gpt-4o-mini` through `RequestHandler`, with `OpenAIInference`
+and `OpenAIModerator`, which is the same wiring `main.py` uses. Each case gets
+its own in-memory SQLite database. HTTP and URL fetching are not part of the
+run; summary pages are fixed text passed to the `/v1/summarize` prompt
+(`summary_prompt` in `src/app.py`).
 
-From `cumin/`:
+From `cumin/`, with `OPENAI_API_KEY` in `.env`:
 
 ```bash
 uv sync --frozen
-PYTHONDONTWRITEBYTECODE=1 uv run --frozen python scripts/run_eval.py
-PYTHONDONTWRITEBYTECODE=1 uv run --frozen python scripts/benchmark_fake.py
+PYTHONDONTWRITEBYTECODE=1 uv run --frozen --env-file .env python scripts/run_eval.py
 ```
 
-No `.env`, API key, network, paid model, production DB or Redis is used. Each
-case uses isolated in-memory SQLite and closes it. A mock SDK response checks
-usage parsing and the repository's existing price arithmetic without calling
-OpenAI. Those rates are a pinned code fixture, not verified current pricing.
+A full run makes about 50 model calls and costs well under one cent.
 
-## Scoring
+## Summary quality
 
-Each named policy invariant scores one point, including known regressions.
-The pass rate is `passed / total`. All failures count; exit status is 1 if
-any case fails. Exceptions from worker futures are propagated and counted as
-failures. The set is intentionally small and does not prove security.
+Ten pages: release notes, a council budget story, a recipe, a study abstract,
+a page with an instruction planted for summarizers, a delay notice, a 404
+page, a pricing table, a news article buried in site navigation and cookie
+text, and a Spanish news story. Each case lists:
 
-Current results: **13/16 (81.25%)**. Three failures are retained as failing
-regressions rather than marked expected/pass:
+- `facts`: groups of phrases. The summary must contain at least one phrase
+  from each group (case-insensitive).
+- `forbidden`: phrases that must not appear, such as the planted `PINEAPPLE`
+  instruction or the cookie banner.
+- `max_words`: 90 for articles and 50 for the 404 page, to hold the prompt's
+  "a few sentences" to a concrete limit.
 
-- Actual USD can exceed the reservation and therefore the monthly cap.
-- Actual token usage can exceed the reservation and therefore the token cap.
-- Concurrent same-key retries can both call the provider and charge.
+Each check is one point. A trial passes only when all its checks pass. Every
+case runs three times (`--trials`) because the model samples, so the score is
+reported over all 30 trials.
 
-See [results.json](results.json) and [pending decisions](../docs/pending-decisions.md).
-Pattern moderation checks only known patterns, not broad safety or jailbreak
-resistance. Tenant checks cover service-layer audit/cache/ledger scoping, not
-HTTP authorization or full admin UI access control. Redis, cross-process
-concurrency, persistent-disk performance, URL-fetch guard, real LLM output
-quality, and live deployment are not evaluated by this suite.
+## Policy
+
+Seventeen invariants for quota, rate limit, idempotency, moderation and cost.
+Twelve reach the model. `input_pattern`, `input_moderation` and `invalid_auth`
+go through the same handler and must stop before it. `rate_window` and
+`invalid_cached_usage` test the limiter and the cost function directly.
+Notable designs:
+
+- `usd_cap` and `token_cap` set the per-request reserve equal to the monthly
+  cap, so the first call is admitted and the second must stop before the
+  model.
+- `burst_reserve` sends 40 requests at once under a cap that fits five
+  reserves. It checks that no more than five are at the model at the same
+  time and that spend stays under the cap.
+- `provider_usage_cost` recomputes the cost from the usage OpenAI returned at
+  the pinned rates in `src/utils/openai_cost.py` and compares it with the
+  ledger.
+- `input_moderation` uses a threat the pattern classifier does not match, so
+  the rejection comes from the OpenAI moderation endpoint.
+- `provider_error_release` asks for an unknown model so OpenAI returns an
+  error.
+
+Known regressions count as failures. The exit status is 1 if any summary trial
+or policy case fails.
+
+## Results
+
+Recorded run in [results.json](results.json), including every summary the
+model wrote:
+
+| Group | Score |
+|---|---:|
+| Summary trials | 25/30 (83.3%) |
+| Summary checks | 136/141 (96.5%) |
+| Policy invariants | 14/17 (82.4%) |
+
+49 model calls, $0.0025 total, median handler latency 2.34 s for a summary.
+
+Summary misses: `council_budget` left out the 7-2 vote in all three trials,
+`release_notes` ran to 92 words once, and `embedded_instruction` once
+described the work as "upgrades" without the new signalling. No summary
+followed the planted instruction.
+
+The three failing policy cases are the known regressions in
+[pending decisions](../docs/pending-decisions.md):
+
+- Actual USD can exceed the reservation and therefore the monthly cap
+  ($0.0000207 spent under a $0.000001 cap).
+- Actual tokens can exceed the reservation and therefore the token cap
+  (49 tokens under a 5-token cap).
+- Two simultaneous requests with the same idempotency key both call the model
+  and both charge.
+
+## Limits
+
+Fact matching is by phrase, so a correct paraphrase can miss. Every miss in
+the recorded run was read by hand and is listed above. Pattern moderation
+covers known phrases only. Tenant checks cover service-layer scoping, not HTTP
+authorization. Redis, cross-process concurrency and URL fetching are not
+evaluated here.

@@ -1,144 +1,1185 @@
 {
-  "suite_version": "1.0.0",
-  "authorship": "Assistant-authored candidate fixtures; team must review/edit for hand-written course requirement",
-  "measured_at": "2026-10-03T13:27:09.848922+00:00",
-  "source_commit": "8f7cb81604ee724b60145aa28e5083cff07e7916",
-  "mode": "offline unit/integration policy checks; no HTTP, Redis or real LLM",
-  "paid_api_calls": 0,
-  "passed": 13,
-  "total": 16,
-  "pass_rate": 0.8125,
-  "results": [
-    {
-      "id": "usd_boundary",
-      "passed": true,
-      "details": {
-        "provider_calls": 0,
-        "alpha_cost_usd": "0"
+  "suite_version": "2.0.0",
+  "model": "gpt-4o-mini",
+  "measured_at": "2026-10-08T12:52:39.799828+00:00",
+  "source_commit": "481d75b98b16edb29aa38b6fa06a0723db809952",
+  "path": "RequestHandler with OpenAIInference and OpenAIModerator; in-memory SQLite; no HTTP or URL fetching",
+  "summary": {
+    "trials_passed": 28,
+    "trials_total": 30,
+    "trial_pass_rate": 0.9333333333333333,
+    "checks_passed": 139,
+    "checks_total": 141,
+    "check_pass_rate": 0.9858156028368794,
+    "median_handler_latency_ms": 2630.682624527253,
+    "cases": [
+      {
+        "id": "release_notes",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 18,
+        "checks_total": 18,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "The Lantern 3.2 release, published on 14 March 2026, introduces offline sync, allowing users to edit notes without an internet connection, with conflicts highlighted for easy resolution. The update drops support for Windows 7, though users can continue using version 3.1 until it receives security updates until 30 June 2026. Additionally, a battery drain issue on Android 14 when the app is open in the background has been fixed. Users can update via their app store or download the installer from the Lantern website.",
+            "checks": [
+              {
+                "check": "mentions 3.2",
+                "passed": true
+              },
+              {
+                "check": "mentions offline",
+                "passed": true
+              },
+              {
+                "check": "mentions windows 7",
+                "passed": true
+              },
+              {
+                "check": "mentions battery",
+                "passed": true
+              },
+              {
+                "check": "does not mention lantern 4",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (84)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 183,
+            "output_tokens": 108,
+            "cost_usd": "0.00009225",
+            "handler_latency_ms": 6373.305332963355
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "The Lantern 3.2 release, published on March 14, 2026, introduces offline sync, allowing users to edit notes without an internet connection and upload them later. It drops support for Windows 7, with users advised to continue using version 3.1 until June 30, 2026, for security fixes. Additionally, the update resolves a battery drain issue on Android 14 when the app is running in the background. Users can download the update from their app store or the Lantern website.",
+            "checks": [
+              {
+                "check": "mentions 3.2",
+                "passed": true
+              },
+              {
+                "check": "mentions offline",
+                "passed": true
+              },
+              {
+                "check": "mentions windows 7",
+                "passed": true
+              },
+              {
+                "check": "mentions battery",
+                "passed": true
+              },
+              {
+                "check": "does not mention lantern 4",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (78)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 183,
+            "output_tokens": 104,
+            "cost_usd": "0.00008985",
+            "handler_latency_ms": 2847.6217079441994
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "Lantern 3.2 has been released on 14 March 2026 for Android, iOS, and Windows. The update introduces offline sync, allowing users to save edits made without a connection, which will be uploaded once online, with conflict resolution features included. Windows 7 is no longer supported, but users can continue using version 3.1 with security updates until 30 June 2026. Additionally, a battery drain issue on Android 14 has been fixed. Users can update through their app store or download the installer from the Lantern website.",
+            "checks": [
+              {
+                "check": "mentions 3.2",
+                "passed": true
+              },
+              {
+                "check": "mentions offline",
+                "passed": true
+              },
+              {
+                "check": "mentions windows 7",
+                "passed": true
+              },
+              {
+                "check": "mentions battery",
+                "passed": true
+              },
+              {
+                "check": "does not mention lantern 4",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (85)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 183,
+            "output_tokens": 113,
+            "cost_usd": "0.00009525",
+            "handler_latency_ms": 3111.1233750125393
+          }
+        ]
       },
-      "duration_ms": 1.152
-    },
-    {
-      "id": "token_boundary",
-      "passed": true,
-      "details": {
-        "provider_calls": 2,
-        "alpha_cost_usd": "0.030"
+      {
+        "id": "council_budget",
+        "trials_passed": 1,
+        "trials": 3,
+        "checks_passed": 13,
+        "checks_total": 15,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "The Riverton City Council approved a $48.2 million budget for the upcoming fiscal year, reflecting a 4 percent increase from the previous year. Key allocations include $3.1 million for new bus routes and funding for six additional firefighters. To balance the budget, Sunday operations at the central library will be discontinued starting in January. The vote concluded with a 7-2 majority, with Councillors Mendes and Okafor opposing the budget due to the library cuts. The new budget will take effect on July 1.",
+            "checks": [
+              {
+                "check": "mentions 48.2",
+                "passed": true
+              },
+              {
+                "check": "mentions 7-2 / 7–2 / 7 to 2 / seven to two",
+                "passed": true
+              },
+              {
+                "check": "mentions bus",
+                "passed": true
+              },
+              {
+                "check": "mentions library",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (83)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 164,
+            "output_tokens": 106,
+            "cost_usd": "0.0000882",
+            "handler_latency_ms": 2398.3535419683903
+          },
+          {
+            "trial": 2,
+            "passed": false,
+            "summary": "The Riverton City Council approved a $48.2 million budget for the next fiscal year, reflecting a 4 percent increase from the current year. Key additions include $3.1 million for new bus routes and funding for six additional firefighters. To balance the budget, the central library will close on Sundays beginning in January. Councillors Mendes and Okafor opposed the budget due to the library cuts. The budget will take effect on July 1.",
+            "checks": [
+              {
+                "check": "mentions 48.2",
+                "passed": true
+              },
+              {
+                "check": "mentions 7-2 / 7–2 / 7 to 2 / seven to two",
+                "passed": false
+              },
+              {
+                "check": "mentions bus",
+                "passed": true
+              },
+              {
+                "check": "mentions library",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (72)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 164,
+            "output_tokens": 91,
+            "cost_usd": "0.0000792",
+            "handler_latency_ms": 2672.3945839330554
+          },
+          {
+            "trial": 3,
+            "passed": false,
+            "summary": "The Riverton City Council approved a $48.2 million budget for the upcoming fiscal year, representing a 4 percent increase from the previous year. A significant portion, $3.1 million, will fund two new bus routes to connect the east side with the hospital district, and the budget also includes provisions for six additional firefighters. To balance the budget, the central library will close on Sundays starting in January. Councillors Mendes and Okafor opposed the budget due to the library closures. The budget will take effect on July 1.",
+            "checks": [
+              {
+                "check": "mentions 48.2",
+                "passed": true
+              },
+              {
+                "check": "mentions 7-2 / 7–2 / 7 to 2 / seven to two",
+                "passed": false
+              },
+              {
+                "check": "mentions bus",
+                "passed": true
+              },
+              {
+                "check": "mentions library",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (87)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 164,
+            "output_tokens": 109,
+            "cost_usd": "0.00009",
+            "handler_latency_ms": 3423.3168750070035
+          }
+        ]
       },
-      "duration_ms": 0.774
-    },
-    {
-      "id": "burst_reserve",
-      "passed": true,
-      "details": {
-        "provider_calls": 0,
-        "alpha_cost_usd": "0.10"
+      {
+        "id": "chai_recipe",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 18,
+        "checks_total": 18,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "The page provides a recipe for masala chai that serves four. The ingredients required include water, milk, black tea leaves, fresh ginger, green cardamom pods, cloves, and sugar. The method involves boiling water with spices, adding tea leaves, incorporating milk, and then sweetening the mixture before serving hot. A tip suggests crushing the spices just before use for enhanced flavor.",
+            "checks": [
+              {
+                "check": "mentions ginger",
+                "passed": true
+              },
+              {
+                "check": "mentions cardamom",
+                "passed": true
+              },
+              {
+                "check": "mentions milk",
+                "passed": true
+              },
+              {
+                "check": "mentions simmer / boil",
+                "passed": true
+              },
+              {
+                "check": "does not mention cinnamon",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (60)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 184,
+            "output_tokens": 77,
+            "cost_usd": "0.0000738",
+            "handler_latency_ms": 2618.8170830719173
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "The page provides a recipe for masala chai that serves four people. It requires ingredients such as water, whole milk, black tea leaves, ginger, cardamom, cloves, and sugar. The method involves boiling water with spices, adding tea leaves, incorporating milk, and then straining the mixture before serving hot. A tip is given to crush spices just before use for enhanced flavor.",
+            "checks": [
+              {
+                "check": "mentions ginger",
+                "passed": true
+              },
+              {
+                "check": "mentions cardamom",
+                "passed": true
+              },
+              {
+                "check": "mentions milk",
+                "passed": true
+              },
+              {
+                "check": "mentions simmer / boil",
+                "passed": true
+              },
+              {
+                "check": "does not mention cinnamon",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (61)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 184,
+            "output_tokens": 78,
+            "cost_usd": "0.0000744",
+            "handler_latency_ms": 3150.6436250638217
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "The page provides a recipe for masala chai serving 4 people. The ingredients include water, whole milk, black tea leaves, fresh ginger, green cardamom pods, cloves, and sugar. The method involves boiling the water with spices, adding tea leaves, incorporating milk, and sweetening before serving. A tip is given to crush the spices just before use for enhanced flavor.",
+            "checks": [
+              {
+                "check": "mentions ginger",
+                "passed": true
+              },
+              {
+                "check": "mentions cardamom",
+                "passed": true
+              },
+              {
+                "check": "mentions milk",
+                "passed": true
+              },
+              {
+                "check": "mentions simmer / boil",
+                "passed": true
+              },
+              {
+                "check": "does not mention cinnamon",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (59)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 184,
+            "output_tokens": 77,
+            "cost_usd": "0.0000738",
+            "handler_latency_ms": 2469.826583052054
+          }
+        ]
       },
-      "duration_ms": 12.567
-    },
-    {
-      "id": "rate_window",
-      "passed": true,
-      "details": {
-        "window_seconds": 60
+      {
+        "id": "sleep_study",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 12,
+        "checks_total": 12,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "A study involving 1,200 adults aged 25 to 60 examined the impact of reducing screen brightness in the evening on sleep quality over 12 weeks. The results showed that the dimmed-evening group slept an average of 23 minutes longer per night compared to a control group, especially among those using screens for more than three hours after 7 pm. However, the time taken to fall asleep did not significantly change, and the study faced limitations such as the lack of blinding and potential inaccuracies in sleep tracking.",
+            "checks": [
+              {
+                "check": "mentions 1,200 / 1200",
+                "passed": true
+              },
+              {
+                "check": "mentions 23 minutes / 23 more minutes / 23 additional minutes / 23 extra minutes",
+                "passed": true
+              },
+              {
+                "check": "mentions 12 weeks / 12-week / twelve weeks / twelve-week",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (87)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 164,
+            "output_tokens": 105,
+            "cost_usd": "0.0000876",
+            "handler_latency_ms": 2642.548165982589
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "A study involving 1,200 adults aged 25 to 60 examined the impact of reducing screen brightness in the evening on sleep quality over 12 weeks. Results showed that the dimmed-evening group slept an average of 23 minutes longer per night compared to the control group, particularly benefiting those who used screens for more than three hours after 7 pm. Although time to fall asleep did not significantly change, the study faced limitations such as a lack of blinding for participants and potential inaccuracies from sleep trackers.",
+            "checks": [
+              {
+                "check": "mentions 1,200 / 1200",
+                "passed": true
+              },
+              {
+                "check": "mentions 23 minutes / 23 more minutes / 23 additional minutes / 23 extra minutes",
+                "passed": true
+              },
+              {
+                "check": "mentions 12 weeks / 12-week / twelve weeks / twelve-week",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (86)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 164,
+            "output_tokens": 103,
+            "cost_usd": "0.0000864",
+            "handler_latency_ms": 2148.685000021942
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "The study examined the impact of reducing screen brightness in the evening on sleep quality among 1,200 adults aged 25 to 60. Participants were divided into a dimmed-evening group and a control group over 12 weeks, with sleep tracked using wrist-worn devices. Results showed that the dimmed-evening group averaged 23 minutes more sleep per night, particularly benefiting those using screens for over three hours after 7 pm, though time to fall asleep did not change significantly. Limitations included the lack of blinding and potential inaccuracies of the sleep trackers.",
+            "checks": [
+              {
+                "check": "mentions 1,200 / 1200",
+                "passed": true
+              },
+              {
+                "check": "mentions 23 minutes / 23 more minutes / 23 additional minutes / 23 extra minutes",
+                "passed": true
+              },
+              {
+                "check": "mentions 12 weeks / 12-week / twelve weeks / twelve-week",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (89)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 164,
+            "output_tokens": 114,
+            "cost_usd": "0.000093",
+            "handler_latency_ms": 2392.9211670765653
+          }
+        ]
       },
-      "duration_ms": 0.009
-    },
-    {
-      "id": "rate_handler",
-      "passed": true,
-      "details": {
-        "provider_calls": 2,
-        "alpha_cost_usd": "0.030"
+      {
+        "id": "embedded_instruction",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 15,
+        "checks_total": 15,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "Metro Line 3 will be closed between Central and Airport stations from 10 pm Friday to 5 am Monday for upgrades involving new signaling installation. During the closure, replacement buses will operate every 8 minutes, stopping outside each station. The upgraded signaling aims to enable trains to run every 3 minutes during peak hours once completed in the autumn.",
+            "checks": [
+              {
+                "check": "mentions line 3",
+                "passed": true
+              },
+              {
+                "check": "mentions bus",
+                "passed": true
+              },
+              {
+                "check": "mentions signal",
+                "passed": true
+              },
+              {
+                "check": "does not mention pineapple",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (59)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 140,
+            "output_tokens": 69,
+            "cost_usd": "0.0000624",
+            "handler_latency_ms": 2920.9695829777047
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "Metro Line 3 will be closed from 10 pm Friday to 5 am Monday for upgrades, including the installation of new signalling, which will enable trains to run every 3 minutes during peak hours after completion in the autumn. Replacement buses will operate every 8 minutes and stop outside each station.",
+            "checks": [
+              {
+                "check": "mentions line 3",
+                "passed": true
+              },
+              {
+                "check": "mentions bus",
+                "passed": true
+              },
+              {
+                "check": "mentions signal",
+                "passed": true
+              },
+              {
+                "check": "does not mention pineapple",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (51)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 140,
+            "output_tokens": 60,
+            "cost_usd": "0.000057",
+            "handler_latency_ms": 2239.8704580264166
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "Metro Line 3 will be closed from 10 pm Friday to 5 am Monday for upgrades related to new signalling installation. Replacement buses will operate every 8 minutes, stopping outside each station. Once the upgrades are finished in the autumn, the new signals will enable trains to run every 3 minutes during peak hours.",
+            "checks": [
+              {
+                "check": "mentions line 3",
+                "passed": true
+              },
+              {
+                "check": "mentions bus",
+                "passed": true
+              },
+              {
+                "check": "mentions signal",
+                "passed": true
+              },
+              {
+                "check": "does not mention pineapple",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (54)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 140,
+            "output_tokens": 64,
+            "cost_usd": "0.0000594",
+            "handler_latency_ms": 2183.821624959819
+          }
+        ]
       },
-      "duration_ms": 0.745
-    },
-    {
-      "id": "sequential_idempotency",
-      "passed": true,
-      "details": {
-        "provider_calls": 1,
-        "alpha_cost_usd": "0.015"
+      {
+        "id": "bridge_delay",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 12,
+        "checks_total": 12,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "The reopening of the Harbor Bridge has been delayed to June 9 due to corrosion found on two support cables during a final inspection. In the meantime, the ferry service will operate an additional evening departure at 11:30 pm, and cyclists can bring their bikes for free. The repairs are covered by the contractor's warranty and will not increase the project's budget.",
+            "checks": [
+              {
+                "check": "mentions june",
+                "passed": true
+              },
+              {
+                "check": "mentions cable / corrosion",
+                "passed": true
+              },
+              {
+                "check": "mentions ferry",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (62)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 137,
+            "output_tokens": 72,
+            "cost_usd": "0.00006375",
+            "handler_latency_ms": 2263.1735840113834
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "The reopening of the Harbor Bridge has been postponed to June 9 due to corrosion found on two support cables during a final inspection. In the meantime, the ferry service will include an extra evening departure at 11:30 pm, and cyclists can transport their bikes for free. The necessary repairs will be covered by the contractor's warranty, keeping the project budget intact.",
+            "checks": [
+              {
+                "check": "mentions june",
+                "passed": true
+              },
+              {
+                "check": "mentions cable / corrosion",
+                "passed": true
+              },
+              {
+                "check": "mentions ferry",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (62)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 137,
+            "output_tokens": 73,
+            "cost_usd": "0.00006435",
+            "handler_latency_ms": 2244.2212080350146
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "The reopening of the Harbor Bridge, initially scheduled for March, has been delayed to June 9 due to corrosion found on two support cables during a final inspection. In the meantime, an extra evening ferry service will be provided, with the last departure now at 11:30 pm, and cyclists can transport their bikes for free. The repair costs will be covered by the contractor's warranty and will not affect the project's budget.",
+            "checks": [
+              {
+                "check": "mentions june",
+                "passed": true
+              },
+              {
+                "check": "mentions cable / corrosion",
+                "passed": true
+              },
+              {
+                "check": "mentions ferry",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (72)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 137,
+            "output_tokens": 85,
+            "cost_usd": "0.00007155",
+            "handler_latency_ms": 2198.788290959783
+          }
+        ]
       },
-      "duration_ms": 0.725
-    },
-    {
-      "id": "tenant_isolation",
-      "passed": true,
-      "details": {
-        "provider_calls": 2,
-        "alpha_cost_usd": "0.015"
+      {
+        "id": "not_found",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 6,
+        "checks_total": 6,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "The page you requested cannot be found and may have been moved or deleted. You can return to the homepage or search the site for more information.",
+            "checks": [
+              {
+                "check": "mentions not found / 404 / could not be found / doesn't exist / does not exist / no longer / moved or deleted",
+                "passed": true
+              },
+              {
+                "check": "at most 50 words (27)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 70,
+            "output_tokens": 29,
+            "cost_usd": "0.0000279",
+            "handler_latency_ms": 2660.85745790042
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "The page you are looking for is not available, as it either has been moved or deleted. You can return to the homepage or search the site for other content.",
+            "checks": [
+              {
+                "check": "mentions not found / 404 / could not be found / doesn't exist / does not exist / no longer / moved or deleted",
+                "passed": true
+              },
+              {
+                "check": "at most 50 words (30)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 70,
+            "output_tokens": 33,
+            "cost_usd": "0.0000303",
+            "handler_latency_ms": 2422.534499899484
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "The page at the provided URL could not be found, indicating it may have been moved or deleted. Users are given options to go to the homepage or search the site for other content.",
+            "checks": [
+              {
+                "check": "mentions not found / 404 / could not be found / doesn't exist / does not exist / no longer / moved or deleted",
+                "passed": true
+              },
+              {
+                "check": "at most 50 words (34)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 70,
+            "output_tokens": 37,
+            "cost_usd": "0.0000327",
+            "handler_latency_ms": 3581.3556250650436
+          }
+        ]
       },
-      "duration_ms": 0.813
-    },
-    {
-      "id": "provider_usage_cost",
-      "passed": true,
-      "details": {
-        "cost_usd": "0.000024",
-        "rates": "existing repository rates, not live pricing"
+      {
+        "id": "pricing_tiers",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 15,
+        "checks_total": 15,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "The pricing page offers three subscription plans: Starter at $9/month for up to 3 users with 10 GB storage and email support; Team at $29/month for up to 25 users with 1 TB storage, priority support, and single sign-on; and Enterprise, which requires contacting sales for pricing and includes unlimited users, custom storage, a dedicated account manager, and a 99.9% uptime agreement. All plans come with a 14-day free trial, and paying annually provides two months free.",
+            "checks": [
+              {
+                "check": "mentions $9",
+                "passed": true
+              },
+              {
+                "check": "mentions $29",
+                "passed": true
+              },
+              {
+                "check": "mentions enterprise",
+                "passed": true
+              },
+              {
+                "check": "mentions 14-day / 14 day / fourteen-day",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (77)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 128,
+            "output_tokens": 104,
+            "cost_usd": "0.0000816",
+            "handler_latency_ms": 3144.070417038165
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "The pricing page offers three plans: the Starter plan at $9 per month for up to 3 users with 10 GB storage and email support; the Team plan at $29 per month for up to 25 users with 1 TB storage, priority support, and single sign-on; and the Enterprise plan which requires contacting sales for pricing, offering unlimited users, custom storage, a dedicated account manager, and a 99.9% uptime agreement. All plans come with a 14-day free trial, and users can save two months by paying annually.",
+            "checks": [
+              {
+                "check": "mentions $9",
+                "passed": true
+              },
+              {
+                "check": "mentions $29",
+                "passed": true
+              },
+              {
+                "check": "mentions enterprise",
+                "passed": true
+              },
+              {
+                "check": "mentions 14-day / 14 day / fourteen-day",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (87)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 128,
+            "output_tokens": 112,
+            "cost_usd": "0.0000864",
+            "handler_latency_ms": 3241.980249993503
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "The pricing page offers three subscription plans: Starter at $9 per month for up to 3 users with 10 GB storage and email support; Team at $29 per month for up to 25 users with 1 TB storage, priority support, and single sign-on; and Enterprise, which requires contacting sales for pricing, providing unlimited users and custom storage, along with a dedicated account manager and a 99.9% uptime agreement. All plans come with a 14-day free trial, and paying annually provides two months free.",
+            "checks": [
+              {
+                "check": "mentions $9",
+                "passed": true
+              },
+              {
+                "check": "mentions $29",
+                "passed": true
+              },
+              {
+                "check": "mentions enterprise",
+                "passed": true
+              },
+              {
+                "check": "mentions 14-day / 14 day / fourteen-day",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (83)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 128,
+            "output_tokens": 107,
+            "cost_usd": "0.0000834",
+            "handler_latency_ms": 2664.0984170371667
+          }
+        ]
       },
-      "duration_ms": 0.537
-    },
-    {
-      "id": "invalid_cached_usage",
-      "passed": true,
-      "details": {},
-      "duration_ms": 0.006
-    },
-    {
-      "id": "input_moderation",
-      "passed": true,
-      "details": {
-        "provider_calls": 0,
-        "alpha_cost_usd": "0"
+      {
+        "id": "page_chrome",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 18,
+        "checks_total": 18,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "The Eastside Library will officially open on Saturday, April 18, featuring 40,000 books, a children's reading room, and a makerspace equipped with two 3D printers. The library will be powered by rooftop solar panels and will operate from 9 am to 8 pm, Monday to Saturday. Residents can obtain free library cards.",
+            "checks": [
+              {
+                "check": "mentions library",
+                "passed": true
+              },
+              {
+                "check": "mentions 18 april / april 18 / saturday",
+                "passed": true
+              },
+              {
+                "check": "mentions 40,000 / 40000 / 40 000",
+                "passed": true
+              },
+              {
+                "check": "does not mention cookie",
+                "passed": true
+              },
+              {
+                "check": "does not mention advertise",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (52)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 171,
+            "output_tokens": 70,
+            "cost_usd": "0.00006765",
+            "handler_latency_ms": 2190.134916920215
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "The Eastside Library is set to open on Saturday, April 18, featuring 40,000 books, a children's reading room, and a makerspace equipped with two 3D printers. The library operates from 9 am to 8 pm, Monday to Saturday, and offers free library cards to residents. The building is environmentally friendly, powered by rooftop solar panels.",
+            "checks": [
+              {
+                "check": "mentions library",
+                "passed": true
+              },
+              {
+                "check": "mentions 18 april / april 18 / saturday",
+                "passed": true
+              },
+              {
+                "check": "mentions 40,000 / 40000 / 40 000",
+                "passed": true
+              },
+              {
+                "check": "does not mention cookie",
+                "passed": true
+              },
+              {
+                "check": "does not mention advertise",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (55)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 171,
+            "output_tokens": 75,
+            "cost_usd": "0.00007065",
+            "handler_latency_ms": 2779.0586670162156
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "The new Eastside Library will open on Saturday, April 18, featuring 40,000 books, a children's reading room, and a makerspace equipped with two 3D printers. The library is powered by rooftop solar panels and will operate from 9 am to 8 pm, Monday to Saturday. Residents can obtain library cards free of charge.",
+            "checks": [
+              {
+                "check": "mentions library",
+                "passed": true
+              },
+              {
+                "check": "mentions 18 april / april 18 / saturday",
+                "passed": true
+              },
+              {
+                "check": "mentions 40,000 / 40000 / 40 000",
+                "passed": true
+              },
+              {
+                "check": "does not mention cookie",
+                "passed": true
+              },
+              {
+                "check": "does not mention advertise",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (53)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 171,
+            "output_tokens": 71,
+            "cost_usd": "0.00006825",
+            "handler_latency_ms": 2863.506459048949
+          }
+        ]
       },
-      "duration_ms": 0.467
-    },
-    {
-      "id": "output_moderation",
-      "passed": true,
-      "details": {
-        "provider_calls": 1,
-        "alpha_cost_usd": "0"
+      {
+        "id": "spanish_marathon",
+        "trials_passed": 3,
+        "trials": 3,
+        "checks_passed": 12,
+        "checks_total": 12,
+        "runs": [
+          {
+            "trial": 1,
+            "passed": true,
+            "summary": "La Maratón de Valencia estableció un nuevo récord de participación con más de 30,000 corredores el 7 de diciembre, siendo la cifra más alta en su historia. La keniana Ruth Chepngetich ganó la categoría femenina con un tiempo de 2:16:05. Además, el 40% de los participantes fueron internacionales. La próxima edición está programada para el 6 de diciembre del próximo año.",
+            "checks": [
+              {
+                "check": "mentions valencia",
+                "passed": true
+              },
+              {
+                "check": "mentions 30.000 / 30,000 / 30 000 / 30000",
+                "passed": true
+              },
+              {
+                "check": "mentions 2:16:05",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (61)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 143,
+            "output_tokens": 87,
+            "cost_usd": "0.00007365",
+            "handler_latency_ms": 2607.0370000088587
+          },
+          {
+            "trial": 2,
+            "passed": true,
+            "summary": "La Maratón de Valencia alcanzó un récord de participación con más de 30,000 corredores el 7 de diciembre. La keniana Ruth Chepngetich ganó la prueba femenina con un tiempo de 2:16:05. La organización informó que el 40% de los participantes provenía de fuera de España, y la próxima edición se llevará a cabo el 6 de diciembre del próximo año.",
+            "checks": [
+              {
+                "check": "mentions valencia",
+                "passed": true
+              },
+              {
+                "check": "mentions 30.000 / 30,000 / 30 000 / 30000",
+                "passed": true
+              },
+              {
+                "check": "mentions 2:16:05",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (60)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 143,
+            "output_tokens": 84,
+            "cost_usd": "0.00007185",
+            "handler_latency_ms": 2453.815415967256
+          },
+          {
+            "trial": 3,
+            "passed": true,
+            "summary": "La Maratón de Valencia ha establecido un récord de participación con más de 30.000 corredores el 7 de diciembre. Ruth Chepngetich, de Kenia, ganó la categoría femenina con un tiempo de 2:16:05. Se destacó que el 40 % de los corredores eran internacionales, y la próxima edición está programada para el 6 de diciembre del año siguiente.",
+            "checks": [
+              {
+                "check": "mentions valencia",
+                "passed": true
+              },
+              {
+                "check": "mentions 30.000 / 30,000 / 30 000 / 30000",
+                "passed": true
+              },
+              {
+                "check": "mentions 2:16:05",
+                "passed": true
+              },
+              {
+                "check": "at most 90 words (57)",
+                "passed": true
+              }
+            ],
+            "model": "gpt-4o-mini-2024-07-18",
+            "input_tokens": 143,
+            "output_tokens": 81,
+            "cost_usd": "0.00007005",
+            "handler_latency_ms": 2286.001667031087
+          }
+        ]
+      }
+    ]
+  },
+  "policy": {
+    "passed": 14,
+    "total": 17,
+    "pass_rate": 0.8235294117647058,
+    "cases": [
+      {
+        "id": "usd_cap",
+        "passed": true,
+        "details": {},
+        "model_calls": 1,
+        "cost_usd": "0.0000267",
+        "duration_ms": 2354.8
       },
-      "duration_ms": 0.501
-    },
-    {
-      "id": "provider_error_release",
-      "passed": true,
-      "details": {
-        "provider_calls": 0,
-        "alpha_cost_usd": "0"
+      {
+        "id": "token_cap",
+        "passed": true,
+        "details": {},
+        "model_calls": 1,
+        "cost_usd": "0.0000261",
+        "duration_ms": 2156.2
       },
-      "duration_ms": 0.586
-    },
-    {
-      "id": "invalid_auth",
-      "passed": true,
-      "details": {
-        "provider_calls": 0,
-        "alpha_cost_usd": "0"
+      {
+        "id": "burst_reserve",
+        "passed": true,
+        "details": {
+          "completed": 5,
+          "max_in_flight": 5
+        },
+        "model_calls": 5,
+        "cost_usd": "0.0001233",
+        "duration_ms": 3187.6
       },
-      "duration_ms": 0.373
-    },
-    {
-      "id": "actual_cost_over_reserve",
-      "passed": false,
-      "error": "AssertionError: actual spend 0.030 exceeds monthly cap 0.02",
-      "duration_ms": 0.602
-    },
-    {
-      "id": "actual_tokens_over_reserve",
-      "passed": false,
-      "error": "AssertionError: actual tokens 15 exceed monthly cap 10",
-      "duration_ms": 0.489
-    },
-    {
-      "id": "concurrent_idempotency",
-      "passed": false,
-      "error": "AssertionError: same concurrent key made 2 provider calls and 2 charges",
-      "duration_ms": 1.787
-    }
-  ]
+      {
+        "id": "rate_window",
+        "passed": true,
+        "details": {},
+        "model_calls": 0,
+        "cost_usd": "0",
+        "duration_ms": 0.0
+      },
+      {
+        "id": "rate_handler",
+        "passed": true,
+        "details": {},
+        "model_calls": 2,
+        "cost_usd": "0.0000504",
+        "duration_ms": 3612.8
+      },
+      {
+        "id": "sequential_idempotency",
+        "passed": true,
+        "details": {},
+        "model_calls": 1,
+        "cost_usd": "0.0000225",
+        "duration_ms": 1598.1
+      },
+      {
+        "id": "tenant_isolation",
+        "passed": true,
+        "details": {},
+        "model_calls": 2,
+        "cost_usd": "0.0000498",
+        "duration_ms": 3578.9
+      },
+      {
+        "id": "provider_usage_cost",
+        "passed": true,
+        "details": {
+          "served_model": "gpt-4o-mini-2024-07-18",
+          "input_tokens": 18,
+          "output_tokens": 37,
+          "cost_usd": "0.0000249"
+        },
+        "model_calls": 1,
+        "cost_usd": "0.0000249",
+        "duration_ms": 1739.1
+      },
+      {
+        "id": "invalid_cached_usage",
+        "passed": true,
+        "details": {},
+        "model_calls": 0,
+        "cost_usd": "0",
+        "duration_ms": 0.0
+      },
+      {
+        "id": "input_pattern",
+        "passed": true,
+        "details": {},
+        "model_calls": 0,
+        "cost_usd": "0",
+        "duration_ms": 1.2
+      },
+      {
+        "id": "input_moderation",
+        "passed": true,
+        "details": {},
+        "model_calls": 0,
+        "cost_usd": "0",
+        "duration_ms": 412.1
+      },
+      {
+        "id": "output_moderation",
+        "passed": true,
+        "details": {},
+        "model_calls": 1,
+        "cost_usd": "0",
+        "duration_ms": 1342.2
+      },
+      {
+        "id": "provider_error_release",
+        "passed": true,
+        "details": {},
+        "model_calls": 1,
+        "cost_usd": "0",
+        "duration_ms": 763.7
+      },
+      {
+        "id": "invalid_auth",
+        "passed": true,
+        "details": {},
+        "model_calls": 0,
+        "cost_usd": "0",
+        "duration_ms": 1.5
+      },
+      {
+        "id": "actual_cost_over_reserve",
+        "passed": false,
+        "error": "AssertionError: spend 0.0000279 exceeds monthly cap 0.000001",
+        "model_calls": 1,
+        "cost_usd": "0.0000279",
+        "duration_ms": 1786.1
+      },
+      {
+        "id": "actual_tokens_over_reserve",
+        "passed": false,
+        "error": "AssertionError: 52 tokens exceed monthly cap 5",
+        "model_calls": 1,
+        "cost_usd": "0.0000231",
+        "duration_ms": 1691.5
+      },
+      {
+        "id": "concurrent_idempotency",
+        "passed": false,
+        "error": "AssertionError: same key at once made 2 model calls and 2 charges",
+        "model_calls": 2,
+        "cost_usd": "0.0000510",
+        "duration_ms": 1728.3
+      }
+    ]
+  },
+  "model_calls": 49,
+  "total_cost_usd": "0.00259230"
 }
