@@ -1,0 +1,608 @@
+{
+  "model": "Qwen2.5-0.5B-Instruct-Q4_K_M",
+  "model_source": "https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF",
+  "model_revision": "41ba88dbac95fed2528c92514c131d73eb5a174b",
+  "model_sha256": "6eb923e7d26e9cea28811e1a8e852009b21242fb157b26149d3b188f3a8c8653",
+  "runtime": "version: 0.6.0-dev (build 11476, commit 988190680)\nbuilt with GNU 11.4.0 for Linux x86_64",
+  "server_args": [
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "8099",
+    "-t",
+    "2",
+    "-tb",
+    "2",
+    "-c",
+    "2048",
+    "-np",
+    "2",
+    "-n",
+    "32",
+    "--no-warmup"
+  ],
+  "temperature": 0,
+  "seed": 42,
+  "max_tokens": 32,
+  "cache_prompt": false,
+  "measured_at": "2026-10-07T23:51:58.990902+00:00",
+  "source_commit": "481d75b98b16edb29aa38b6fa06a0723db809952",
+  "hardware": {
+    "cpu": "Intel Xeon 2.60GHz, 2 vCPU, no GPU",
+    "memory_gib": 1.9,
+    "platform": "Linux-6.1.158+-x86_64-with-glibc2.35"
+  },
+  "api_fees_usd": "0",
+  "infrastructure_cost": "not measured",
+  "paid_api_calls": 0,
+  "scope": "RequestHandler + in-memory SQLite + loopback real llama.cpp inference; not public FastAPI HTTP or deployed throughput; test-only LLM adapter",
+  "warmup_requests": 1,
+  "loads": [
+    {
+      "concurrency": 1,
+      "attempted": 30,
+      "successful": 30,
+      "elapsed_s": 41.836386774000005,
+      "requests_per_second": 0.7170791340576298,
+      "p50_ms": 1612.6051840000173,
+      "p95_ms": 1878.120647000003,
+      "p99_ms": 1973.1185560000029,
+      "percentile_method": "nearest-rank on successful samples; small-sample p99 is maximum, not a stable production tail estimate",
+      "samples": [
+        {
+          "i": 0,
+          "ok": true,
+          "handler_ms": 1973.1185560000029,
+          "input_tokens": 69,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 120 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 1,
+          "ok": true,
+          "handler_ms": 1018.6534329999972,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 2,
+          "ok": true,
+          "handler_ms": 938.7959790000195,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 3,
+          "ok": true,
+          "handler_ms": 1791.5712559999974,
+          "input_tokens": 69,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 123 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 4,
+          "ok": true,
+          "handler_ms": 853.8807579999741,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 5,
+          "ok": true,
+          "handler_ms": 858.4871559999954,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 6,
+          "ok": true,
+          "handler_ms": 840.1661069999875,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 7,
+          "ok": true,
+          "handler_ms": 852.9150230000084,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 8,
+          "ok": true,
+          "handler_ms": 890.0146250000205,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 9,
+          "ok": true,
+          "handler_ms": 879.1342339999915,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 10,
+          "ok": true,
+          "handler_ms": 1782.3186329999885,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 130 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 11,
+          "ok": true,
+          "handler_ms": 1809.5513989999858,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 131 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 12,
+          "ok": true,
+          "handler_ms": 1728.9672040000141,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 132 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 13,
+          "ok": true,
+          "handler_ms": 1716.1344069999984,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 133 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 14,
+          "ok": true,
+          "handler_ms": 1740.8274000000006,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 134 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 15,
+          "ok": true,
+          "handler_ms": 1746.5661219999902,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 135 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 16,
+          "ok": true,
+          "handler_ms": 1878.120647000003,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 136 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 17,
+          "ok": true,
+          "handler_ms": 1792.579757999988,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 137 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 18,
+          "ok": true,
+          "handler_ms": 1816.8863519999832,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 138 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 19,
+          "ok": true,
+          "handler_ms": 1692.8932659999987,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 139 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 20,
+          "ok": true,
+          "handler_ms": 1722.2181549999789,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 140 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 21,
+          "ok": true,
+          "handler_ms": 1127.8860550000047,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 21."
+        },
+        {
+          "i": 22,
+          "ok": true,
+          "handler_ms": 1083.580530000006,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 22."
+        },
+        {
+          "i": 23,
+          "ok": true,
+          "handler_ms": 1796.6235680000011,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 143 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 24,
+          "ok": true,
+          "handler_ms": 1084.6399879999922,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 24."
+        },
+        {
+          "i": 25,
+          "ok": true,
+          "handler_ms": 1666.679371000015,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 145 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 26,
+          "ok": true,
+          "handler_ms": 1612.6051840000173,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 146 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 27,
+          "ok": true,
+          "handler_ms": 1003.0130030000066,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 27."
+        },
+        {
+          "i": 28,
+          "ok": true,
+          "handler_ms": 1047.297235000002,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 28."
+        },
+        {
+          "i": 29,
+          "ok": true,
+          "handler_ms": 1088.8558020000119,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 29."
+        }
+      ]
+    },
+    {
+      "concurrency": 2,
+      "attempted": 30,
+      "successful": 30,
+      "elapsed_s": 34.55658949100001,
+      "requests_per_second": 0.8681412269521928,
+      "p50_ms": 2567.3504809999768,
+      "p95_ms": 3203.1883510000225,
+      "p99_ms": 3467.268517999997,
+      "percentile_method": "nearest-rank on successful samples; small-sample p99 is maximum, not a stable production tail estimate",
+      "samples": [
+        {
+          "i": 0,
+          "ok": true,
+          "handler_ms": 2526.6539069999963,
+          "input_tokens": 69,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 120 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 1,
+          "ok": true,
+          "handler_ms": 2567.3504809999768,
+          "input_tokens": 69,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 121 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 2,
+          "ok": true,
+          "handler_ms": 1457.527232999979,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 3,
+          "ok": true,
+          "handler_ms": 1458.2937920000063,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 4,
+          "ok": true,
+          "handler_ms": 1432.687843999986,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 5,
+          "ok": true,
+          "handler_ms": 3467.268517999997,
+          "input_tokens": 69,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 125 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 6,
+          "ok": true,
+          "handler_ms": 1083.8916790000042,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 7,
+          "ok": true,
+          "handler_ms": 1546.3325190000035,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 8,
+          "ok": true,
+          "handler_ms": 1510.4869360000066,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 9,
+          "ok": true,
+          "handler_ms": 1592.5923270000055,
+          "input_tokens": 69,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 10,
+          "ok": true,
+          "handler_ms": 2844.652658000001,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 130 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 11,
+          "ok": true,
+          "handler_ms": 2750.4126380000002,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 131 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 12,
+          "ok": true,
+          "handler_ms": 2674.99737899999,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 132 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 13,
+          "ok": true,
+          "handler_ms": 2686.325020999988,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 133 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 14,
+          "ok": true,
+          "handler_ms": 2957.0677389999955,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 134 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 15,
+          "ok": true,
+          "handler_ms": 3072.618220999999,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 135 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 16,
+          "ok": true,
+          "handler_ms": 2913.7435309999946,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 136 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 17,
+          "ok": true,
+          "handler_ms": 2801.784915000013,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 137 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 18,
+          "ok": true,
+          "handler_ms": 2887.720497000004,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 138 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 19,
+          "ok": true,
+          "handler_ms": 2923.4423710000215,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 139 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 20,
+          "ok": true,
+          "handler_ms": 3185.383561999998,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 140 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 21,
+          "ok": true,
+          "handler_ms": 1383.2647189999818,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 21."
+        },
+        {
+          "i": 22,
+          "ok": true,
+          "handler_ms": 1819.0029959999947,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 22."
+        },
+        {
+          "i": 23,
+          "ok": true,
+          "handler_ms": 3203.1883510000225,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 143 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 24,
+          "ok": true,
+          "handler_ms": 1445.2522100000067,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 24."
+        },
+        {
+          "i": 25,
+          "ok": true,
+          "handler_ms": 2948.0602129999907,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 145 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 26,
+          "ok": true,
+          "handler_ms": 2975.834225999989,
+          "input_tokens": 70,
+          "output_tokens": 32,
+          "cost_usd": "0",
+          "text": "Tenant Alpha used 146 input tokens and 30 output tokens, while Tenant Beta used 40 input tokens and 10 output tokens."
+        },
+        {
+          "i": 27,
+          "ok": true,
+          "handler_ms": 1839.7420590000024,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 27."
+        },
+        {
+          "i": 28,
+          "ok": true,
+          "handler_ms": 1534.2156680000016,
+          "input_tokens": 70,
+          "output_tokens": 11,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens."
+        },
+        {
+          "i": 29,
+          "ok": true,
+          "handler_ms": 1246.1817680000138,
+          "input_tokens": 70,
+          "output_tokens": 16,
+          "cost_usd": "0",
+          "text": "Tenant Alpha and Beta used different amounts of tokens in Batch 29."
+        }
+      ]
+    }
+  ]
+}

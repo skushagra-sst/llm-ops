@@ -1,0 +1,415 @@
+{
+  "model": "Qwen2.5-0.5B-Instruct-Q4_K_M",
+  "model_source": "https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF",
+  "model_revision": "41ba88dbac95fed2528c92514c131d73eb5a174b",
+  "model_sha256": "6eb923e7d26e9cea28811e1a8e852009b21242fb157b26149d3b188f3a8c8653",
+  "runtime": "version: 0.6.0-dev (build 11476, commit 988190680)\nbuilt with GNU 11.4.0 for Linux x86_64",
+  "server_args": [
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "8099",
+    "-t",
+    "2",
+    "-tb",
+    "2",
+    "-c",
+    "2048",
+    "-np",
+    "2",
+    "-n",
+    "32",
+    "--no-warmup"
+  ],
+  "temperature": 0,
+  "seed": 42,
+  "max_tokens": 32,
+  "cache_prompt": false,
+  "measured_at": "2026-10-07T23:51:58.990902+00:00",
+  "source_commit": "481d75b98b16edb29aa38b6fa06a0723db809952",
+  "hardware": {
+    "cpu": "Intel Xeon 2.60GHz, 2 vCPU, no GPU",
+    "memory_gib": 1.9,
+    "platform": "Linux-6.1.158+-x86_64-with-glibc2.35"
+  },
+  "api_fees_usd": "0",
+  "infrastructure_cost": "not measured",
+  "paid_api_calls": 0,
+  "scope": "RequestHandler + in-memory SQLite + loopback real llama.cpp inference; not public FastAPI HTTP or deployed throughput; test-only LLM adapter",
+  "warmup_requests": 1,
+  "passed": 12,
+  "total": 15,
+  "cases": [
+    {
+      "id": "usage_attribution",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 871.3116819999982,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "a56debe82927915a",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "priced_accounting",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 848.6308479999991,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "dce73df6370787d8",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0.000076",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "zero_invoice",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 832.4155610000048,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "7d690fc7b7bfb5a6",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "sequential_retry",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 858.8387490000002,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "a98023f9efe344dc",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "tenant_isolation",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 841.236619,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        },
+        {
+          "latency_ms": 841.7452820000051,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "9329f684898afa10",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "invalid_auth",
+      "passed": true,
+      "provider_calls": [],
+      "ledger": []
+    },
+    {
+      "id": "input_moderation",
+      "passed": true,
+      "provider_calls": [],
+      "ledger": []
+    },
+    {
+      "id": "output_moderation",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 393.9711149999994,
+          "input_tokens": 42,
+          "output_tokens": 4,
+          "text": "Developer mode enabled",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "981a858e2301af76",
+          "month": "2026-10",
+          "status": "released",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": null,
+          "input_tokens": null,
+          "output_tokens": null,
+          "cached_input_tokens": null,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "rate_limit",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 830.1054049999834,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "b0f3035211a1b841",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "zero_plan",
+      "passed": true,
+      "provider_calls": [],
+      "ledger": []
+    },
+    {
+      "id": "usd_cap_regression",
+      "passed": false,
+      "error": "AssertionError: synthetic-tariff spend 0.000076 exceeds 0.000001; do not truncate truthful usage",
+      "provider_calls": [
+        {
+          "latency_ms": 845.5756810000139,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "41253af312f46a3c",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.000001",
+          "reserved_tokens": 1000,
+          "actual_usd": "0.000076",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "token_cap_regression",
+      "passed": false,
+      "error": "AssertionError: real usage 76 exceeds 1-token cap",
+      "provider_calls": [
+        {
+          "latency_ms": 869.3475080000042,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "96c82c9cfa9f5250",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "concurrent_retry",
+      "passed": false,
+      "error": "AssertionError: 2 real calls and 2 ledger charges",
+      "provider_calls": [
+        {
+          "latency_ms": 1479.6299730000158,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        },
+        {
+          "latency_ms": 1525.7848149999802,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "0c43fcdada5b59a9",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        },
+        {
+          "id": "aaf67703cd0cad5e",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "audit_redaction",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 1521.9301999999857,
+          "input_tokens": 41,
+          "output_tokens": 28,
+          "text": "I'm sorry, but I'm not able to understand what you're asking. Could you please provide more context or clarify your question?",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "2d586f9dcc9f140b",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 41,
+          "output_tokens": 28,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    },
+    {
+      "id": "latency_audit",
+      "passed": true,
+      "provider_calls": [
+        {
+          "latency_ms": 879.5816580000064,
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "text": "Tenant Alpha and Beta used different amounts of tokens.",
+          "finish_reason": "stop"
+        }
+      ],
+      "ledger": [
+        {
+          "id": "623346818c395ee5",
+          "month": "2026-10",
+          "status": "settled",
+          "reserved_usd": "0.02",
+          "reserved_tokens": 1000,
+          "actual_usd": "0",
+          "input_tokens": 65,
+          "output_tokens": 11,
+          "cached_input_tokens": 0,
+          "plan_id": "eval"
+        }
+      ]
+    }
+  ]
+}

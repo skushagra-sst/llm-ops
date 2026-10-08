@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "scoring": "One point per case only when every invariant passes. Failures and exceptions count as zero, including known bugs. Checks are policy correctness, not summary quality. No model judge.",
+  "cases": [
+    {"id":"usage_attribution","scenario":"Alpha summarizes the two-tenant usage note with a real provider.","expected":"Input/output usage equals server-reported token counts in Alpha's ledger; Beta stays uncharged."},
+    {"id":"priced_accounting","scenario":"Price real generated tokens with a test-only $0.000001/token tariff.","expected":"Returned cost, ledger and audit agree exactly with Decimal arithmetic; tariff is synthetic, not a provider invoice."},
+    {"id":"zero_invoice","scenario":"Run local inference without an API fee.","expected":"Cost is zero but real input/output tokens still accumulate."},
+    {"id":"sequential_retry","scenario":"Alpha retries an already completed request using the same idempotency key.","expected":"Identical completion returned as replay; one real inference and one ledger charge."},
+    {"id":"tenant_isolation","scenario":"Alpha and Beta reuse the same idempotency key.","expected":"Two independent completions, each tenant's ledger/audit scoped separately."},
+    {"id":"invalid_auth","scenario":"Request arrives with an invalid API key.","expected":"AuthenticationError before inference/reservation; unauthenticated audit event."},
+    {"id":"input_moderation","scenario":"Prompt includes the explicit known override pattern ignore previous instructions.","expected":"PromptRejected before any model call or reservation; injection audit event."},
+    {"id":"output_moderation","scenario":"Ask the real model to repeat developer mode enabled exactly.","expected":"If model emits the configured banned phrase, OutputRejected and hold released. Non-emission does not prove the moderation path and fails this probe."},
+    {"id":"rate_limit","scenario":"A tenant with RPM=1 sends two immediate distinct requests.","expected":"Only first reaches real inference and settlement; second raises RateLimitExceeded."},
+    {"id":"zero_plan","scenario":"A tenant has no USD budget but positive USD reservation.","expected":"BudgetExceeded before inference with no ledger charge."},
+    {"id":"usd_cap_regression","scenario":"USD reserve/cap are $0.000001; real usage priced at synthetic $0.000001/token exceeds reserve.","expected":"Hard cap must hold without falsifying usage/accounting. Exceeding it fails; not a real dollar invoice. Known issue #1."},
+    {"id":"token_cap_regression","scenario":"Token reserve/cap are one token; real request consumes more.","expected":"Hard token cap must hold without truncating recorded usage. Overshoot fails. Known issue #1."},
+    {"id":"concurrent_retry","scenario":"Two Alpha calls with one key rendezvous just before real inference, after the cache lookup.","expected":"Exactly one provider invocation and one ledger charge. Both workers' exceptions count as failure. Known issue #2."},
+    {"id":"audit_redaction","scenario":"Real model processes a note containing alice@example.com.","expected":"Stored request text redacts the email. This is not a full privacy/security eval."},
+    {"id":"latency_audit","scenario":"A real model request finishes successfully.","expected":"Audit stores positive latency/model/outcome, and returned handler latency is at least persisted latency."}
+  ]
+}
