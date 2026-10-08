@@ -22,7 +22,9 @@ class Completion:
 
 class LLM(ABC):
     @abstractmethod
-    def complete(self, messages: List[Message], model: str) -> Completion:
+    def complete(
+        self, messages: List[Message], model: str, max_output_tokens: int | None = None
+    ) -> Completion:
         raise NotImplementedError
 
     @abstractmethod

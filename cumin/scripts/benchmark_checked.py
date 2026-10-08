@@ -1,9 +1,10 @@
 """Latency and time-to-first-token for the checked request path.
 
-Latency is RequestHandler.handle, which authenticates, rate-limits, classifies
-the prompt, reserves budget, calls the model, moderates the output, and settles.
-Time to first token runs those same gates, then streams, because handle does not
-stream. The stream reservation is released so it is not booked twice. One warmup
+Latency is RequestHandler.handle, which authenticates, rate-limits, bounds the
+request's worst case, classifies the prompt, reserves that worst case, calls the
+model with the output cap, moderates the output, and settles. Time to first
+token runs those same gates, then streams with the same cap, because handle does
+not stream. The stream reservation is released so it is not booked twice. One warmup
 call of each kind is discarded.
 """
 
@@ -98,12 +99,14 @@ def measure_ttft(handler: RequestHandler, raw_key: str) -> dict:
     plan = handler.budget.plan_for(tenant)
     if not handler.limiter.allow(tenant.id, plan.requests_per_minute):
         raise RuntimeError("benchmark hit the rate limit")
+    bound = handler.bound(messages, MODEL)
     check_input(messages)
-    reservation_id = handler.budget.reserve(tenant)
+    reservation_id = handler.budget.reserve(tenant, usd=bound.usd, tokens=bound.tokens)
     try:
         stream = handler.llm._client.chat.completions.create(
             model=MODEL,
             messages=[{"role": "user", "content": PROMPT}],
+            max_completion_tokens=bound.output_tokens,
             stream=True,
         )
         ttft_ms = None

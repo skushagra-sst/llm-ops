@@ -169,7 +169,7 @@ function PlanCard({ plan, onEdit, onDelete }: { plan: Plan; onEdit: () => void; 
         <Fact label="Soft warning" value={price(plan.soft_budget_usd)} />
         <Fact label="Tokens per month" value={count(plan.monthly_token_budget)} />
         <Fact label="Rate limit" value={`${count(plan.requests_per_minute)} / min`} />
-        <Fact label="Hold per request" value={`${price(plan.request_reserve_usd)} · ${count(plan.request_reserve_tokens)} ${plan.request_reserve_tokens === 1 ? "token" : "tokens"}`} />
+        <Fact label="Minimum hold" value={`${price(plan.request_reserve_usd)} · ${count(plan.request_reserve_tokens)} ${plan.request_reserve_tokens === 1 ? "token" : "tokens"}`} />
       </dl>
       <div className="border-t p-3">
         <Button variant="outline" size="sm" className="w-full" onClick={onEdit}>
@@ -322,7 +322,7 @@ function PlanDialog({
             </Field>
           </Group>
 
-          <Group title="Hold per request" description="Held from the budget before each model call, then settled to the real cost.">
+          <Group title="Minimum hold per request" description="Each request holds the larger of this and its own worst case (prompt bound plus the output cap) before the model call, then settles to the billed cost.">
             <Field label="Amount" htmlFor="plan-reserve">
               <Money id="plan-reserve" value={draft.request_reserve_usd} onChange={set("request_reserve_usd")} />
             </Field>

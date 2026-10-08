@@ -19,13 +19,13 @@ const MODELS = ["gpt-4o-mini"]
 
 const STEPS = [
   { id: "fetch", title: "Fetch page", detail: "The URL resolves to a public host and returns text." },
-  { id: "replay", title: "Idempotency", detail: "A repeated Idempotency-Key returns the stored response." },
+  { id: "replay", title: "Idempotency", detail: "A repeated Idempotency-Key returns the stored response. A key still in use, or reused for another URL, is refused." },
   { id: "rate", title: "Rate limit", detail: "Requests per minute stay under the plan’s limit." },
   { id: "input", title: "Prompt check", detail: "The page text is screened for prompt injection." },
-  { id: "budget", title: "Budget reservation", detail: "Budget is held before the model runs." },
+  { id: "budget", title: "Budget reservation", detail: "The request’s worst-case cost is held before the model runs." },
   { id: "model", title: "Model call", detail: "The model writes the summary." },
   { id: "output", title: "Output check", detail: "The summary is moderated before it is returned." },
-  { id: "settle", title: "Ledger settle", detail: "The hold settles to the real token cost." },
+  { id: "settle", title: "Ledger settle", detail: "The hold settles to the billed token cost." },
 ] as const
 
 type StepId = (typeof STEPS)[number]["id"]
@@ -350,6 +350,7 @@ function failedStep(status: number, message: string): StepId | null {
   if (status === 400) return message === "prompt rejected" ? "input" : "fetch"
   if (status === 429) return "rate"
   if (status === 402) return "budget"
+  if (status === 409) return "replay"
   if (status === 422) return "output"
   if (status === 403 || status === 404) return null
   return "model"
@@ -358,6 +359,7 @@ function failedStep(status: number, message: string): StepId | null {
 function errorTitle(status: number, message: string) {
   if (status === 429) return "Rate limited"
   if (status === 402) return "Budget exceeded"
+  if (status === 409) return "Idempotency key conflict"
   if (status === 422) return "Output was moderated"
   if (status === 403) return "Tenant is inactive"
   if (status === 400) return message === "prompt rejected" ? "Prompt rejected" : "Couldn’t fetch that page"

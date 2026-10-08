@@ -1,31 +1,27 @@
 # Feature changes requiring owner approval
 
-No feature code was changed while adding these deliverables.
+## Budget reservation does not cap actual usage (fixed)
 
-## Budget reservation does not cap actual usage
+Resolved for issue #1 with a request-specific worst-case reservation. Each
+request's input is bounded by its byte length, its output is capped at 512
+tokens, and that worst case is reserved before the model call. Usage is then
+settled exactly as billed; anything above the hold is flagged as an overrun.
+Unpriced models are refused. See "Hard-cap guarantee" in the README, the unit
+tests in `tests/`, and the `worst_case_hold`, `output_cap` and over-cap
+evaluation cases.
 
-`BudgetGate.reserve` protects admission using estimated per-request USD/tokens.
-`settle` accepts larger actual usage without enforcing a bound. The regression
-cases on gpt-4o-mini show $0.0000207 spent under a $0.000001 monthly cap, and
-49 tokens under a 5-token cap. Production plans have larger reserves, but there is no enforced maximum
-provider output proving usage stays within them.
+## Concurrent idempotency race (fixed)
 
-Decision needed: enforce an input/output bound and reserve its worst-case cost;
-define how to handle unavoidable provider costs above the reserve. Simply
-rejecting a settlement after inference does not undo a paid provider call.
-Feature work would touch budget/request/provider code. Approval is required.
-
-## Concurrent idempotency race
-
-`RequestHandler` checks cache, calls provider, settles and then saves a result.
-Two in-flight requests with the same tenant/key can both miss and charge. The
-regression starts two gpt-4o-mini requests together and observes two model
-calls and two ledger entries.
-
-Decision needed: atomically claim the tenant/key before inference, then wait
-or return a conflict while in flight, with failure/recovery handling. A local
-lock only covers one process; DB-backed ownership is needed across workers.
-Approval is required before changing the handler/store/schema.
+Resolved for issue #2 with a database-backed claim on the tenant's key, taken
+in one transaction before the rate limit, reservation or model call. The
+owner's decisions: a duplicate that arrives while the first request is
+running gets 409 with `Retry-After` straight away (it does not wait), and a
+claim left by a crashed process is never taken over; that key answers 409
+"outcome unknown, use a new key" permanently. Reusing a key for a different
+request also gets 409. Claims are dropped on failures before the charge and
+kept on failures after it. See "Idempotency" in the README,
+`tests/test_idempotency.py`, and the `concurrent_idempotency` and `key_reuse`
+evaluation cases.
 
 ## Per-request latency and response cost
 
@@ -57,6 +53,7 @@ for DB plan edits and version attribution. Approval is required.
 
 The earlier latency gap above is retained as historical context. On October 3,
 the owner approved issue 3 only. Audit now stores nullable handler-only latency;
-public summary/usage and admin log JSON/CSV expose it. Budget settlement and
-idempotency flow are unchanged. Existing audit rows remain NULL.
+public summary/usage and admin log JSON/CSV expose it. That change left budget
+settlement and the idempotency flow unchanged (both were changed later for
+issues #1 and #2). Existing audit rows remain NULL.
 See the README's timing scope and `scripts/check_latency.py`.

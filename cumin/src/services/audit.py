@@ -9,7 +9,7 @@ from src.services.db import Database, utc_now
 _EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _API_KEY = re.compile(r"\b[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{10,}\b")
 
-BLOCKED = ("rate_limited", "budget_exceeded", "injection", "moderated", "error", "unauthenticated")
+BLOCKED = ("rate_limited", "budget_exceeded", "injection", "moderated", "error", "unauthenticated", "unsupported_model", "idempotency_conflict")
 
 _KINDS = {
     "completed": ("outcome = 'completed'", ()),

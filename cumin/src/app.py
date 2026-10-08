@@ -20,12 +20,12 @@ from src.services.audit import AuditEvent, AuditLog, LogFilter
 from src.services.budget import BudgetExceeded, BudgetGate
 from src.services.db import Database
 from src.services.fetch import FetchError, assert_public_url, fetch_page
-from src.services.idempotency import IdempotencyStore
+from src.services.idempotency import IdempotencyConflict, IdempotencyStore, request_fingerprint
 from src.services.moderation import OpenAIModerator, OutputRejected, PatternModerator, PromptRejected
 from src.services.plans import PlanExists, PlanInUse, PlanStore
 from src.services.rate_limit import RateLimitExceeded, RateLimiter
 from src.services.redis import RedisRateLimiter
-from src.services.request import RequestHandler
+from src.services.request import RequestHandler, UnsupportedModel
 from src.services.tenant import AuthenticationError, TenantExists, TenantManager
 
 _ADMIN_DIST = Path(__file__).resolve().parents[1] / "web" / "dist"
@@ -434,7 +434,9 @@ def create_app(
         started = time.perf_counter()
         messages = _summary_messages(str(body.url))
         idempotency_key = (body.idempotency_key or "").strip() or None
-        result = _guarded(lambda: handler.handle_tenant(tenant, CONSOLE_KEY, messages, body.model, idempotency_key))
+        fingerprint = request_fingerprint(str(body.url), body.model)
+        result = _guarded(lambda: handler.handle_tenant(
+            tenant, CONSOLE_KEY, messages, body.model, idempotency_key, fingerprint))
         return {
             **_summary_json(result),
             "cost_usd": str(result.cost_usd),
@@ -484,7 +486,9 @@ def create_app(
     ) -> dict:
         raw_key = _bearer(authorization)
         messages = _summary_messages(str(body.url))
-        result = _guarded(lambda: handler.handle(raw_key, messages, body.model, idempotency_key))
+        # Fingerprint what the client sent; the fetched page may change between retries.
+        fingerprint = request_fingerprint(str(body.url), body.model)
+        result = _guarded(lambda: handler.handle(raw_key, messages, body.model, idempotency_key, fingerprint))
         return _summary_json(result)
 
     return app
@@ -522,6 +526,11 @@ def _guarded(run):
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except OutputRejected as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except UnsupportedModel as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except IdempotencyConflict as exc:
+        headers = {"Retry-After": "2"} if exc.retry else None
+        raise HTTPException(status_code=409, detail=str(exc), headers=headers) from exc
 
 
 def _summary_json(result) -> dict:

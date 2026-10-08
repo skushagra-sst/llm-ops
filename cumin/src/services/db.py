@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS ledger (
     actual_usd TEXT,
     input_tokens INTEGER,
     output_tokens INTEGER,
-    cached_input_tokens INTEGER
+    cached_input_tokens INTEGER,
+    overrun INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS idempotency (
@@ -42,6 +43,15 @@ CREATE TABLE IF NOT EXISTS idempotency (
     input_tokens INTEGER NOT NULL,
     output_tokens INTEGER NOT NULL,
     cached_input_tokens INTEGER NOT NULL,
+    fingerprint TEXT,
+    PRIMARY KEY (tenant_id, idempotency_key)
+);
+
+CREATE TABLE IF NOT EXISTS idempotency_claims (
+    tenant_id TEXT NOT NULL,
+    idempotency_key TEXT NOT NULL,
+    fingerprint TEXT NOT NULL,
+    claimed_at REAL NOT NULL,
     PRIMARY KEY (tenant_id, idempotency_key)
 );
 
@@ -77,6 +87,8 @@ _ADDED_COLUMNS = (
     ("api_keys", "created_at", "TEXT"),
     ("audit", "created_at", "TEXT"),
     ("audit", "latency_ms", "REAL"),
+    ("ledger", "overrun", "INTEGER NOT NULL DEFAULT 0"),
+    ("idempotency", "fingerprint", "TEXT"),
 )
 
 

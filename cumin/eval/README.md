@@ -36,11 +36,11 @@ reported over all 30 trials.
 
 ## Policy
 
-Seventeen invariants for quota, rate limit, idempotency, moderation and cost.
-Twelve reach the model. `input_pattern`, `input_moderation` and `invalid_auth`
-go through the same handler and must stop before it. `rate_window` and
-`invalid_cached_usage` test the limiter and the cost function directly.
-Notable designs:
+Twenty-one invariants for quota, rate limit, idempotency, moderation and
+cost. Thirteen reach the model. `input_pattern`, `input_moderation`,
+`unsupported_model`, `invalid_auth` and the two over-cap cases go through the
+same handler and must stop before it. `rate_window` and `invalid_cached_usage`
+test the limiter and the cost function directly. Notable designs:
 
 - `usd_cap` and `token_cap` set the per-request reserve equal to the monthly
   cap, so the first call is admitted and the second must stop before the
@@ -53,8 +53,23 @@ Notable designs:
   ledger.
 - `input_moderation` uses a threat the pattern classifier does not match, so
   the rejection comes from the OpenAI moderation endpoint.
-- `provider_error_release` asks for an unknown model so OpenAI returns an
-  error.
+- `provider_error_release` sends an invalid message role so OpenAI returns an
+  error after the hold is taken.
+- `worst_case_hold` sets a tiny plan reserve, so the hold is the request's own
+  worst case. It checks that OpenAI's input tokens fit the byte bound, output
+  fits the cap, the cost fits the hold, and the ledger stores OpenAI's numbers
+  unchanged.
+- `output_cap` asks for a 1,500-word essay with a 16-token cap and checks that
+  OpenAI stops at 16 output tokens.
+- `actual_cost_over_reserve` and `actual_tokens_over_reserve` set caps below
+  the request's worst case ($0.000001 and 5 tokens) and check that it is
+  refused before the model, so neither cap can be passed.
+- `concurrent_idempotency` releases two requests with the same key at once.
+  It checks for one model call and one charge, that one request completed
+  and the other was refused as in progress (or replayed, if it arrived after
+  the first finished), and that a later retry replays.
+- `key_reuse` completes a request, then sends a different prompt with the
+  same key and checks that it is refused without a model call or charge.
 
 Known regressions count as failures. The exit status is 1 if any summary trial
 or policy case fails.
@@ -66,26 +81,24 @@ model wrote:
 
 | Group | Score |
 |---|---:|
-| Summary trials | 25/30 (83.3%) |
-| Summary checks | 136/141 (96.5%) |
-| Policy invariants | 14/17 (82.4%) |
+| Summary trials | 26/30 (86.7%) |
+| Summary checks | 137/141 (97.2%) |
+| Policy invariants | 21/21 (100%) |
 
-49 model calls, $0.0025 total, median handler latency 2.34 s for a summary.
+49 model calls, $0.0026 total, median handler latency 2.50 s for a summary.
 
-Summary misses: `council_budget` left out the 7-2 vote in all three trials,
-`release_notes` ran to 92 words once, and `embedded_instruction` once
-described the work as "upgrades" without the new signalling. No summary
-followed the planted instruction.
+Summary misses: `release_notes` went over the 90-word limit in two trials
+(96 and 100 words) and `council_budget` left out the 7-2 vote in two. No
+summary followed the planted instruction. Earlier runs missed the council
+vote in all three trials, or had one summary that omitted the signalling;
+results vary run to run because the model samples.
 
-The three failing policy cases are the known regressions in
-[pending decisions](../docs/pending-decisions.md):
+Budget bounds measured on OpenAI: 18 input tokens billed against a bound of
+57, 42 output tokens against the 512 cap, and $0.000028 billed against a
+$0.00032 hold. With a 16-token cap, OpenAI returned exactly 16 output tokens.
 
-- Actual USD can exceed the reservation and therefore the monthly cap
-  ($0.0000207 spent under a $0.000001 cap).
-- Actual tokens can exceed the reservation and therefore the token cap
-  (49 tokens under a 5-token cap).
-- Two simultaneous requests with the same idempotency key both call the model
-  and both charge.
+In `concurrent_idempotency`, one request completed and the other was refused
+as in progress while the first was at OpenAI; one model call, one charge.
 
 ## Limits
 
@@ -93,4 +106,5 @@ Fact matching is by phrase, so a correct paraphrase can miss. Every miss in
 the recorded run was read by hand and is listed above. Pattern moderation
 covers known phrases only. Tenant checks cover service-layer scoping, not HTTP
 authorization. Redis, cross-process concurrency and URL fetching are not
-evaluated here.
+evaluated here; cross-process idempotency claims are covered by the unit
+tests.

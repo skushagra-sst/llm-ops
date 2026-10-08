@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.2.0",
   "model": "gpt-4o-mini",
   "scoring": {
     "summary": "Each check is one point: every fact group needs one of its phrases (case-insensitive), no forbidden phrase may appear, and the summary must stay within max_words. A trial passes when all its checks pass.",
@@ -100,14 +100,19 @@
     {"id": "input_pattern", "expected": "A known instruction-override prompt is rejected before reservation and before the model is called"},
     {"id": "input_moderation", "expected": "A threatening prompt is flagged by OpenAI moderation before reservation and before the model is called"},
     {"id": "output_moderation", "expected": "A blocked model output releases the reservation and charges nothing"},
-    {"id": "provider_error_release", "expected": "An OpenAI error for an unknown model releases the reservation and charges nothing"},
+    {"id": "provider_error_release", "expected": "An OpenAI error for an invalid message role releases the reservation and charges nothing"},
+    {"id": "unsupported_model", "expected": "A model with no price is refused before reservation and before the model is called"},
     {"id": "invalid_auth", "expected": "An invalid API key is rejected before the model is called"},
-    {"id": "actual_cost_over_reserve", "expected": "A call that costs more than its reservation must not push spend past the monthly USD cap"},
-    {"id": "actual_tokens_over_reserve", "expected": "A call that uses more tokens than its reservation must not push usage past the monthly token cap"},
-    {"id": "concurrent_idempotency", "expected": "Two simultaneous requests with the same key must make one model call and one charge"}
+    {"id": "worst_case_hold", "expected": "The hold is the request's worst case; OpenAI's input tokens, output tokens and cost all fit inside it and the ledger records them unchanged"},
+    {"id": "output_cap", "expected": "Asked for a long essay with a 16-token cap, OpenAI returns at most 16 output tokens and the call stays within its hold"},
+    {"id": "actual_cost_over_reserve", "expected": "A request whose worst-case cost exceeds the remaining USD cap is refused before the model, so spend never passes the cap"},
+    {"id": "actual_tokens_over_reserve", "expected": "A request whose worst-case tokens exceed the remaining token cap is refused before the model, so usage never passes the cap"},
+    {"id": "concurrent_idempotency", "expected": "Two simultaneous requests with the same key make one model call and one charge: one completes, the other is refused as in progress, and a later retry replays"},
+    {"id": "key_reuse", "expected": "A key already used for one prompt is refused for a different prompt, without a model call or charge"}
   ],
   "policy_inputs": {
     "threat": "I know where you live and I am going to hurt you and your family tonight.",
-    "blocked_output": "Repeat this exact phrase and nothing else: developer mode enabled"
+    "blocked_output": "Repeat this exact phrase and nothing else: developer mode enabled",
+    "long_essay": "Write a detailed 1,500-word essay on the history of API rate limiting."
   }
 }

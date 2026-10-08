@@ -18,9 +18,11 @@ from openai import APIStatusError, OpenAI
 from src.app import summary_prompt
 from src.models.llm import Message, Usage
 from src.services.budget import BudgetExceeded
+from src.services.idempotency import IdempotencyConflict
 from src.services.moderation import InjectionClassifier, OpenAIModerator, OutputRejected, PromptRejected
 from src.services.openai_inference import OpenAIInference
 from src.services.rate_limit import RateLimiter, RateLimitExceeded
+from src.services.request import UnsupportedModel
 from src.services.tenant import AuthenticationError
 from src.utils.openai_cost import cost_usd
 
@@ -36,9 +38,9 @@ def client():
     return _client
 
 
-def fixture(model=MODEL, **overrides):
+def fixture(model=MODEL, max_output_tokens=None, **overrides):
     return Fixture(llm=OpenAIInference(client()), moderator=OpenAIModerator(client()),
-                   model=model, **overrides)
+                   model=model, max_output_tokens=max_output_tokens, **overrides)
 
 
 def check(condition, detail):
@@ -111,7 +113,14 @@ def evaluate(case, inputs, stats):
     if kind == "invalid_cached_usage":
         raises(ValueError, lambda: cost_usd(MODEL, Usage(5, 1, 6)))
         return {}
-    overrides, model = {}, MODEL
+    overrides, model, max_output = {}, MODEL, None
+    if kind in ("worst_case_hold", "output_cap"):
+        overrides = {"monthly_budget_usd": Decimal("0.01"), "request_reserve_usd": Decimal("0.000001"),
+                     "request_reserve_tokens": 1}
+    if kind == "output_cap":
+        max_output = 16
+    if kind == "unsupported_model":
+        model = "gpt-cumin-unknown"
     if kind == "usd_cap":
         overrides = {"monthly_budget_usd": Decimal("0.01"), "request_reserve_usd": Decimal("0.01")}
     if kind == "token_cap":
@@ -124,9 +133,7 @@ def evaluate(case, inputs, stats):
         overrides = {"monthly_budget_usd": Decimal("0.000001"), "request_reserve_usd": Decimal("0.000001")}
     if kind == "actual_tokens_over_reserve":
         overrides = {"monthly_token_budget": 5, "request_reserve_tokens": 5}
-    if kind == "provider_error_release":
-        model = "gpt-cumin-unknown"
-    f = fixture(model, **overrides)
+    f = fixture(model, max_output, **overrides)
     detail = {}
     try:
         if kind == "usd_cap":
@@ -202,30 +209,67 @@ def evaluate(case, inputs, stats):
             check(f.gate.spent_usd("alpha") == 0, "output rejection charged")
             check(f.gate.ledger("alpha")[0]["status"] == "released", "hold leaked")
         elif kind == "provider_error_release":
-            raises(APIStatusError, lambda: f.call(messages=PROMPT))
+            raises(APIStatusError, lambda: f.call(messages=[Message("narrator", PROMPT[0].content)]))
+            check(len(f.llm.calls) == 1, "provider was not called")
             check(f.gate.spent_usd("alpha") == 0, "error charged")
             check(f.gate.ledger("alpha")[0]["status"] == "released", "hold leaked")
+        elif kind == "unsupported_model":
+            raises(UnsupportedModel, lambda: f.call(messages=PROMPT))
+            check(not f.llm.calls and not f.gate.ledger("alpha"), "unpriced model called or reserved")
+        elif kind in ("worst_case_hold", "output_cap"):
+            messages = PROMPT if kind == "worst_case_hold" else [Message("user", inputs["long_essay"])]
+            bound = f.handler.bound(messages, MODEL)
+            result = f.call(messages=messages)
+            usage = result.completion.usage
+            row = f.gate.ledger("alpha")[0]
+            check(Decimal(row["reserved_usd"]) == bound.usd and row["reserved_tokens"] == bound.tokens,
+                  "hold is not the request's worst case")
+            check(usage.input_tokens <= bound.input_tokens,
+                  f"{usage.input_tokens} input tokens above the bound {bound.input_tokens}")
+            check(usage.output_tokens <= bound.output_tokens,
+                  f"{usage.output_tokens} output tokens above the cap {bound.output_tokens}")
+            check(result.cost_usd <= bound.usd and row["overrun"] == 0, "call overran its hold")
+            check(Decimal(row["actual_usd"]) == result.cost_usd
+                  and (row["input_tokens"], row["output_tokens"]) == (usage.input_tokens, usage.output_tokens),
+                  "ledger differs from provider usage")
+            detail = {"input_tokens": usage.input_tokens, "input_bound": bound.input_tokens,
+                      "output_tokens": usage.output_tokens, "output_cap": bound.output_tokens,
+                      "cost_usd": str(result.cost_usd), "hold_usd": str(bound.usd)}
         elif kind == "invalid_auth":
             raises(AuthenticationError, lambda: f.handler.handle("invalid", PROMPT, MODEL))
             check(not f.llm.calls, "invalid key reached the model")
-        elif kind == "actual_cost_over_reserve":
-            f.call(messages=PROMPT)
-            check(f.gate.spent_usd("alpha") <= f.plan.monthly_budget_usd,
-                  f"spend {f.gate.spent_usd('alpha')} exceeds monthly cap {f.plan.monthly_budget_usd}")
-        elif kind == "actual_tokens_over_reserve":
-            f.call(messages=PROMPT)
-            check(f.gate.spent_tokens("alpha") <= f.plan.monthly_token_budget,
-                  f"{f.gate.spent_tokens('alpha')} tokens exceed monthly cap {f.plan.monthly_token_budget}")
+        elif kind in ("actual_cost_over_reserve", "actual_tokens_over_reserve"):
+            bound = f.handler.bound(PROMPT, MODEL)
+            raises(BudgetExceeded, lambda: f.call(messages=PROMPT))
+            check(not f.llm.calls, "request reached the model")
+            check(f.gate.spent_usd("alpha") <= f.plan.monthly_budget_usd, "spend exceeds monthly cap")
+            check(f.gate.spent_tokens("alpha") <= f.plan.monthly_token_budget, "tokens exceed monthly cap")
+            detail = {"worst_case_usd": str(bound.usd), "worst_case_tokens": bound.tokens,
+                      "cap_usd": str(f.plan.monthly_budget_usd), "cap_tokens": f.plan.monthly_token_budget}
         elif kind == "concurrent_idempotency":
             barrier = threading.Barrier(2)
             def send(_):
                 barrier.wait(timeout=30)
-                return f.call(messages=PROMPT, key="same-retry")
+                try:
+                    result = f.call(messages=PROMPT, key="same-retry")
+                    return "replayed" if result.replayed else "completed"
+                except IdempotencyConflict as exc:
+                    return "in_flight" if exc.retry else "refused"
             with ThreadPoolExecutor(max_workers=2) as pool:
-                list(pool.map(send, range(2)))
+                answers = sorted(pool.map(send, range(2)))
             charges = f.gate.month_usage("alpha").request_count
             check(len(f.llm.calls) == 1 and charges == 1,
                   f"same key at once made {len(f.llm.calls)} model calls and {charges} charges")
+            check(answers in (["completed", "in_flight"], ["completed", "replayed"]),
+                  f"same key at once answered {answers}")
+            retry = f.call(messages=PROMPT, key="same-retry")
+            check(retry.replayed and len(f.llm.calls) == 1, "retry after completion called the model")
+            detail = {"answers": answers}
+        elif kind == "key_reuse":
+            f.call(messages=PROMPT, key="reused")
+            raises(IdempotencyConflict, lambda: f.call(messages=[Message("user", inputs["long_essay"])], key="reused"))
+            check(len(f.llm.calls) == 1 and f.gate.month_usage("alpha").request_count == 1,
+                  "reused key reached the model or charged")
         else:
             raise ValueError(f"unknown case {kind}")
         return detail

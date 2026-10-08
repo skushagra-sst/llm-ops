@@ -24,7 +24,7 @@ const KINDS = [
   { value: "admin", label: "Admin changes" },
 ]
 
-export const FAILURES = new Set(["rate_limited", "budget_exceeded", "injection", "moderated", "error", "unauthenticated"])
+export const FAILURES = new Set(["rate_limited", "budget_exceeded", "injection", "moderated", "error", "unauthenticated", "unsupported_model", "idempotency_conflict"])
 
 export function LogsPanel({
   tenantId,

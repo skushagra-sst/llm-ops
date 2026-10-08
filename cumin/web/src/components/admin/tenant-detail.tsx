@@ -340,7 +340,7 @@ export function TenantDetailView({
                     return (
                       <TableRow key={entry.id}>
                         <TableCell className="pl-4">
-                          <LedgerStatus status={entry.status} />
+                          <LedgerStatus status={entry.status} overrun={Boolean(entry.overrun)} />
                         </TableCell>
                         <TableCell className="font-mono text-xs">{entry.month}</TableCell>
                         <TableCell className="text-muted-foreground">{label(entry.plan_id)}</TableCell>
@@ -550,7 +550,14 @@ function PlanFact({ label: name, value }: { label: string; value: string }) {
   )
 }
 
-function LedgerStatus({ status }: { status: string }) {
+function LedgerStatus({ status, overrun }: { status: string; overrun: boolean }) {
+  if (status === "settled" && overrun) {
+    return (
+      <Badge variant="destructive" title="The provider billed more than this request's hold">
+        Over hold
+      </Badge>
+    )
+  }
   if (status === "settled") return <Badge variant="secondary">Settled</Badge>
   if (status === "open") return <Badge variant="outline">Reserved</Badge>
   return <Badge variant="outline" className="text-muted-foreground">Released</Badge>

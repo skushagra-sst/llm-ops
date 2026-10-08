@@ -10,10 +10,14 @@ class OpenAIInference(LLM):
     def __init__(self, client: OpenAI | None = None) -> None:
         self._client = client or OpenAI()
 
-    def complete(self, messages: list[Message], model: str) -> Completion:
+    def complete(
+        self, messages: list[Message], model: str, max_output_tokens: int | None = None
+    ) -> Completion:
+        limit = {} if max_output_tokens is None else {"max_completion_tokens": max_output_tokens}
         response = self._client.chat.completions.create(
             model=model,
             messages=[{"role": message.role, "content": message.content} for message in messages],
+            **limit,
         )
         if not response.choices:
             raise RuntimeError("OpenAI returned no choices")

@@ -52,6 +52,7 @@ export type LedgerEntry = {
   input_tokens: number | null
   output_tokens: number | null
   plan_id: string
+  overrun: number
 }
 
 export type LogEvent = {

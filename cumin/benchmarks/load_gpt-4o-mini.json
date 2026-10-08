@@ -1,8 +1,8 @@
 {
   "version": "2.0.0",
   "model": "gpt-4o-mini",
-  "measured_at": "2026-10-08T00:22:19.030713+00:00",
-  "source_commit": "481d75b98b16edb29aa38b6fa06a0723db809952",
+  "measured_at": "2026-10-08T18:02:02.588781+00:00",
+  "source_commit": "92b8914b7155df2ac599d785e19b3d8b0c5e01c0",
   "environment": {
     "python": "3.12.12",
     "platform": "macOS-26.5-arm64-arm-64bit"
@@ -23,25 +23,25 @@
       "warmup_discarded": 3,
       "successes": 200,
       "failures": 0,
-      "elapsed_seconds": 482.10420445899945,
+      "elapsed_seconds": 541.5150419999991,
       "latency_ms": {
-        "p50": 2373.4957079868764,
-        "p95": 2836.98583394289,
-        "p99": 3414.831208065152
+        "p50": 2536.250708000807,
+        "p95": 3450.519207999605,
+        "p99": 4004.4378330003383
       },
-      "throughput_requests_per_second": 0.4148480725747518,
-      "total_cost_usd": "0.01946220",
-      "cost_per_request_usd": "0.000097311",
+      "throughput_requests_per_second": 0.36933415415633153,
+      "total_cost_usd": "0.01938660",
+      "cost_per_request_usd": "0.000096933",
       "mean_input_tokens": 183.0,
-      "mean_output_tokens": 116.435,
+      "mean_output_tokens": 115.805,
       "tenant_attribution": {
         "alpha": {
           "requests": 100,
-          "cost_usd": "0.00973740"
+          "cost_usd": "0.00965460"
         },
         "beta": {
           "requests": 100,
-          "cost_usd": "0.00972480"
+          "cost_usd": "0.00973200"
         }
       },
       "raw_samples_file": "load_gpt-4o-mini_samples.csv"
@@ -52,25 +52,25 @@
       "warmup_discarded": 3,
       "successes": 200,
       "failures": 0,
-      "elapsed_seconds": 65.96268441597931,
+      "elapsed_seconds": 66.24197979100063,
       "latency_ms": {
-        "p50": 2408.9062919374555,
-        "p95": 3240.100457915105,
-        "p99": 6964.211792103015
+        "p50": 2544.8112499998388,
+        "p95": 3235.7600830000592,
+        "p99": 3467.874915999346
       },
-      "throughput_requests_per_second": 3.0320172953960385,
-      "total_cost_usd": "0.01924980",
-      "cost_per_request_usd": "0.000096249",
+      "throughput_requests_per_second": 3.019233432198402,
+      "total_cost_usd": "0.01946100",
+      "cost_per_request_usd": "0.000097305",
       "mean_input_tokens": 183.0,
-      "mean_output_tokens": 114.665,
+      "mean_output_tokens": 116.425,
       "tenant_attribution": {
         "alpha": {
           "requests": 100,
-          "cost_usd": "0.00961800"
+          "cost_usd": "0.00973560"
         },
         "beta": {
           "requests": 100,
-          "cost_usd": "0.00963180"
+          "cost_usd": "0.00972540"
         }
       },
       "raw_samples_file": "load_gpt-4o-mini_samples.csv"

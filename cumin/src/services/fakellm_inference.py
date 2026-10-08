@@ -15,7 +15,11 @@ class FakeLLM(LLM):
         self._usd_per_token = usd_per_token
         self.calls: list[tuple[list[Message], str]] = []
 
-    def complete(self, messages: list[Message], model: str) -> Completion:
+    def complete(
+        self, messages: list[Message], model: str, max_output_tokens: int | None = None
+    ) -> Completion:
+        # Returns the configured usage even above max_output_tokens, so tests can
+        # simulate a provider that overruns its bound.
         self.calls.append((list(messages), model))
         return Completion(text=self._text, model=model, usage=self._usage)
 

@@ -190,15 +190,51 @@ def test_concurrent_reserves_never_pass_the_cap(make_gate, tenants):
     assert gate.spent_usd("alpha") == plan.monthly_budget_usd
 
 
-@pytest.mark.xfail(reason="known bug: settle accepts cost above the reservation, see docs/pending-decisions.md")
-def test_actual_cost_above_reserve_stays_within_cap(make_gate, tenants):
-    gate, plan = make_gate(monthly_budget_usd=Decimal("0.02"))
-    gate.settle(gate.reserve(tenants.get_tenant("alpha")), Decimal("0.03"), USAGE)
-    assert gate.spent_usd("alpha") <= plan.monthly_budget_usd
+def test_request_worst_case_above_plan_reserve_is_held(make_gate, tenants):
+    gate, _ = make_gate()
+    gate.reserve(tenants.get_tenant("alpha"), usd=Decimal("0.05"), tokens=500)
+    row = gate.ledger("alpha")[0]
+    assert (Decimal(row["reserved_usd"]), row["reserved_tokens"]) == (Decimal("0.05"), 500)
 
 
-@pytest.mark.xfail(reason="known bug: settle accepts tokens above the reservation, see docs/pending-decisions.md")
-def test_actual_tokens_above_reserve_stay_within_cap(make_gate, tenants):
-    gate, plan = make_gate(monthly_token_budget=10, request_reserve_tokens=10)
-    gate.settle(gate.reserve(tenants.get_tenant("alpha")), Decimal("0.001"), USAGE)
-    assert gate.spent_tokens("alpha") <= plan.monthly_token_budget
+def test_plan_reserve_is_the_minimum_hold(make_gate, tenants):
+    gate, plan = make_gate()
+    gate.reserve(tenants.get_tenant("alpha"), usd=Decimal("0.001"), tokens=1)
+    row = gate.ledger("alpha")[0]
+    assert Decimal(row["reserved_usd"]) == plan.request_reserve_usd
+    assert row["reserved_tokens"] == plan.request_reserve_tokens
+
+
+def test_worst_case_that_does_not_fit_is_refused(make_gate, tenants):
+    gate, _ = make_gate()
+    alpha = tenants.get_tenant("alpha")
+    with pytest.raises(BudgetExceeded, match="cost"):
+        gate.reserve(alpha, usd=Decimal("0.11"))
+    with pytest.raises(BudgetExceeded, match="token"):
+        gate.reserve(alpha, tokens=100_001)
+    assert gate.ledger("alpha") == []
+
+
+def test_cost_above_the_hold_is_recorded_truthfully(make_gate, tenants):
+    gate, _ = make_gate(monthly_budget_usd=Decimal("0.02"))
+    settlement = gate.settle(gate.reserve(tenants.get_tenant("alpha")), Decimal("0.03"), USAGE)
+    row = gate.ledger("alpha")[0]
+    assert settlement.overrun
+    assert (Decimal(row["actual_usd"]), row["overrun"]) == (Decimal("0.03"), 1)
+    assert gate.spent_usd("alpha") == Decimal("0.03")
+
+
+def test_tokens_above_the_hold_are_recorded_truthfully(make_gate, tenants):
+    gate, _ = make_gate(monthly_token_budget=10, request_reserve_tokens=10)
+    settlement = gate.settle(gate.reserve(tenants.get_tenant("alpha")), Decimal("0.001"), USAGE)
+    row = gate.ledger("alpha")[0]
+    assert settlement.overrun
+    assert (row["input_tokens"], row["output_tokens"], row["overrun"]) == (10, 5, 1)
+    assert gate.spent_tokens("alpha") == 15
+
+
+def test_usage_within_the_hold_is_not_an_overrun(make_gate, tenants):
+    gate, _ = make_gate()
+    settlement = gate.settle(gate.reserve(tenants.get_tenant("alpha")), Decimal("0.02"), USAGE)
+    assert not settlement.overrun
+    assert gate.ledger("alpha")[0]["overrun"] == 0

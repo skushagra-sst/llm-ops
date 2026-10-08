@@ -40,6 +40,7 @@ def handler(llm: FakeLLM, plan: Plan = PLAN) -> tuple[RequestHandler, str]:
         RateLimiter(),
         AuditLog(),
         IdempotencyStore(),
+        max_output_tokens=5,
     )
     return request, raw_key
 

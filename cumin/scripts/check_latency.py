@@ -9,7 +9,7 @@ from src.services.fakellm_inference import FakeLLM
 
 
 class BrokenLLM(FakeLLM):
-    def complete(self, messages, model):
+    def complete(self, messages, model, max_output_tokens=None):
         raise RuntimeError("provider failure")
 
 

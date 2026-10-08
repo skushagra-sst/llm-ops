@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import secrets
 import threading
 from collections.abc import Mapping
@@ -17,6 +18,8 @@ from src.services.db import Database
 if TYPE_CHECKING:
     from src.services.plans import PlanStore
 
+log = logging.getLogger(__name__)
+
 
 class BudgetExceeded(Exception):
     pass
@@ -27,6 +30,7 @@ class Settlement:
     spent_usd: Decimal
     spent_tokens: int
     warning: bool
+    overrun: bool = False
 
 
 @dataclass(frozen=True)
@@ -58,16 +62,19 @@ class BudgetGate:
         self._db = database or Database()
         self._lock = threading.Lock()
 
-    def reserve(self, tenant: Tenant) -> str:
+    def reserve(self, tenant: Tenant, usd: Decimal = Decimal(0), tokens: int = 0) -> str:
+        """Hold the larger of the plan's per-request reserve and the request's worst case."""
         plan = self._plan(tenant)
+        hold_usd = max(plan.request_reserve_usd, usd)
+        hold_tokens = max(plan.request_reserve_tokens, tokens)
         with self._lock:
             with self._db.transaction() as conn:
                 month = self._month()
                 spent = _spent_usd(conn, tenant.id, month)
-                tokens = _spent_tokens(conn, tenant.id, month)
-                if spent + plan.request_reserve_usd > plan.monthly_budget_usd:
+                spent_tokens = _spent_tokens(conn, tenant.id, month)
+                if spent + hold_usd > plan.monthly_budget_usd:
                     raise BudgetExceeded("monthly cost budget exceeded")
-                if tokens + plan.request_reserve_tokens > plan.monthly_token_budget:
+                if spent_tokens + hold_tokens > plan.monthly_token_budget:
                     raise BudgetExceeded("monthly token budget exceeded")
                 entry_id = secrets.token_hex(8)
                 conn.execute(
@@ -81,13 +88,14 @@ class BudgetGate:
                         tenant.id,
                         plan.id,
                         month,
-                        str(plan.request_reserve_usd),
-                        plan.request_reserve_tokens,
+                        str(hold_usd),
+                        hold_tokens,
                     ),
                 )
                 return entry_id
 
     def settle(self, reservation_id: str, actual_usd: Decimal, usage: Usage) -> Settlement:
+        """Record the true cost. Usage above the hold is kept and flagged as an overrun."""
         if actual_usd < 0:
             raise ValueError("actual cost cannot be negative")
         with self._lock:
@@ -95,11 +103,13 @@ class BudgetGate:
                 entry = _entry(conn, reservation_id)
                 if entry.status != "open":
                     raise RuntimeError("reservation is not open")
+                used_tokens = usage.input_tokens + usage.output_tokens
+                overrun = actual_usd > entry.reserved_usd or used_tokens > entry.reserved_tokens
                 conn.execute(
                     """
                     UPDATE ledger
                     SET status = 'settled', actual_usd = ?, input_tokens = ?,
-                        output_tokens = ?, cached_input_tokens = ?
+                        output_tokens = ?, cached_input_tokens = ?, overrun = ?
                     WHERE id = ?
                     """,
                     (
@@ -107,17 +117,25 @@ class BudgetGate:
                         usage.input_tokens,
                         usage.output_tokens,
                         usage.cached_input_tokens,
+                        int(overrun),
                         reservation_id,
                     ),
                 )
                 spent = _spent_usd(conn, entry.tenant_id, entry.month)
                 tokens = _spent_tokens(conn, entry.tenant_id, entry.month)
+        if overrun:
+            log.warning(
+                "ledger %s for tenant %s overran its hold: $%s / %d tokens against $%s / %d held",
+                reservation_id, entry.tenant_id, actual_usd, used_tokens,
+                entry.reserved_usd, entry.reserved_tokens,
+            )
         # Read the plan after the transaction: a database-backed plan store takes the same lock.
         plan = self._plans.get(entry.plan_id)
         return Settlement(
             spent_usd=spent,
             spent_tokens=tokens,
             warning=plan is not None and spent >= plan.soft_budget_usd,
+            overrun=overrun,
         )
 
     def release(self, reservation_id: str) -> None:
@@ -176,7 +194,7 @@ class BudgetGate:
         rows = self._db.read(
             """
             SELECT id, month, status, reserved_usd, reserved_tokens, actual_usd,
-                   input_tokens, output_tokens, cached_input_tokens, plan_id
+                   input_tokens, output_tokens, cached_input_tokens, plan_id, overrun
             FROM ledger WHERE tenant_id = ? ORDER BY rowid DESC LIMIT ?
             """,
             (tenant_id, limit),
